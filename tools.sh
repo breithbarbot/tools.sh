@@ -15,15 +15,15 @@ LISTE=( "[1] Reset (sans vider le cache)"
         "[5] Mise à jour du projet" )
 
 select CHOIX in "${LISTE[@]}" ; do
-	case $REPLY in
+    case $REPLY in
         1)
-		echo ""
-		echo "Start reset"
-		echo "-----------"
-		php bin/console doctrine:database:drop --force
-		php bin/console doctrine:database:create
-		php bin/console doctrine:schema:update --force
-		php bin/console doctrine:fixtures:load
+        echo ""
+        echo "Start reset"
+        echo "-----------"
+        php bin/console doctrine:database:drop --force
+        php bin/console doctrine:database:create
+        php bin/console doctrine:schema:update --force
+        php bin/console doctrine:fixtures:load
         rm -Rf web/uploads/wysiwyg/source/*
         rm -Rf web/uploads/wysiwyg/thumbs
         rm -Rf web/uploads/users/avatars/*
@@ -32,62 +32,62 @@ select CHOIX in "${LISTE[@]}" ; do
         ;;
 
         2)
-		echo ""
-		echo "Start reset"
-		echo "-----------"
-		php bin/console doctrine:database:drop --force
-		php bin/console doctrine:database:create
-		php bin/console doctrine:schema:update --force
-		php bin/console doctrine:fixtures:load
+        echo ""
+        echo "Start reset"
+        echo "-----------"
+        php bin/console doctrine:database:drop --force
+        php bin/console doctrine:database:create
+        php bin/console doctrine:schema:update --force
+        php bin/console doctrine:fixtures:load
         rm -Rf web/uploads/wysiwyg/source/*
         rm -Rf web/uploads/wysiwyg/thumbs
         rm -Rf web/uploads/users/avatars/*
-		echo ""
-		echo "Start cache:clear (dev & prod)"
-		echo "------------------------------"
-		php bin/console cache:clear
-		php bin/console cache:clear --env=prod --no-debug
+        echo ""
+        echo "Start cache:clear (dev & prod)"
+        echo "------------------------------"
+        php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
         echo "Reset OK"
         break
         ;;
 
         3)
-		echo ""
-		echo "Start cache:clear (dev & prod)"
-		echo "------------------------------"
-		php bin/console cache:clear
-		php bin/console cache:clear --env=prod --no-debug
+        echo ""
+        echo "Start cache:clear (dev & prod)"
+        echo "------------------------------"
+        php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
         echo "Vider le cache OK"
         break
         ;;
 
         4)
-		echo ""
-		echo "Start cache:clear (dev & prod) + 'Rm'"
-		echo "-------------------------------------"
+        echo ""
+        echo "Start cache:clear (dev & prod) + 'Rm'"
+        echo "-------------------------------------"
         rm -Rf var/cache/*
         rm -Rf var/sessions/*
         rm -Rf var/logs/*
-		php bin/console cache:clear
-		php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
         echo "Vider le cache (Avec du 'Rm') OK"
         break
         ;;
 
         5)
-		echo ""
-		echo "Start update projet"
-		echo "-------------------------------------"
+        echo ""
+        echo "Start update projet"
+        echo "-------------------------------------"
         php composer update
-		php bin/console doctrine:schema:update --force
-		echo ""
-		echo "Start cache:clear (dev & prod) + 'Rm'"
-		echo "-------------------------------------"
+        php bin/console doctrine:schema:update --force
+        echo ""
+        echo "Start cache:clear (dev & prod) + 'Rm'"
+        echo "-------------------------------------"
         rm -Rf var/cache/*
         rm -Rf var/sessions/*
         rm -Rf var/logs/*
-		php bin/console cache:clear
-		php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
         echo "Vider le cache (Avec du 'Rm') OK"
         break
         ;;
