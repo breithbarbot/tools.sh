@@ -78,7 +78,7 @@ select CHOIX in "${LISTE[@]}" ; do
         echo ""
         echo "Start update projet"
         echo "-------------------------------------"
-        php composer update
+        composer update
         php bin/console doctrine:schema:update --force
         echo ""
         echo "Start cache:clear (dev & prod) + 'Rm'"
