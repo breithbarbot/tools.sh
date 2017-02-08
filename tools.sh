@@ -10,9 +10,9 @@ PS3='Selected : ' # le prompt
 # liste de choix disponibles
 LISTE=( "[1] Reset (sans vider le cache)"
         "[2] Reset"
-        "[3] Vider le cache"
-        "[4] Vider le cache (Avec du 'Rm')"
-        "[5] Mise à jour du projet" )
+        "[3] Clean cache"
+        "[4] Clean cache (With 'Rm')"
+        "[5] Update projet" )
 
 select CHOIX in "${LISTE[@]}" ; do
     case $REPLY in
@@ -27,7 +27,7 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf web/uploads/wysiwyg/source/*
         rm -Rf web/uploads/wysiwyg/thumbs
         rm -Rf web/uploads/users/avatars/*
-        echo "Reset (sans vider le cache) OK"
+        echo "Reset (Without cache) OK"
         break
         ;;
 
@@ -57,7 +57,7 @@ select CHOIX in "${LISTE[@]}" ; do
         echo "------------------------------"
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo "Vider le cache OK"
+        echo "Clean cache OK"
         break
         ;;
 
@@ -70,7 +70,7 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf var/logs/*
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo "Vider le cache (Avec du 'Rm') OK"
+        echo "Clean cache (Avec du 'Rm') OK"
         break
         ;;
 
@@ -88,7 +88,7 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf var/logs/*
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo "Vider le cache (Avec du 'Rm') OK"
+        echo "Clean cache (With 'Rm') OK"
         break
         ;;
     esac
