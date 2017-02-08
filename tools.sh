@@ -17,13 +17,13 @@ LISTE=( "[1] Reset (sans vider le cache)"
 select CHOIX in "${LISTE[@]}" ; do
 	case $REPLY in
         1)
-		echo ""
-		echo "Start reset"
-		echo "-----------"
-		php bin/console doctrine:database:drop --force
-		php bin/console doctrine:database:create
-		php bin/console doctrine:schema:update --force
-		php bin/console doctrine:fixtures:load
+	echo ""
+	echo "Start reset"
+	echo "-----------"
+	php bin/console doctrine:database:drop --force
+	php bin/console doctrine:database:create
+	php bin/console doctrine:schema:update --force
+	php bin/console doctrine:fixtures:load
         rm -Rf web/uploads/wysiwyg/source/*
         rm -Rf web/uploads/wysiwyg/thumbs
         rm -Rf web/uploads/users/avatars/*
