@@ -5,95 +5,122 @@
 # and run : dos2unix tools.sh
 # start run : ./tools.sh
 
-PS3='Selected : ' # le prompt
+# Prompt
+PS3='Selected : '
 
-# liste de choix disponibles
-LISTE=( "[1] Reset (sans vider le cache)"
-        "[2] Reset"
+# List of available choices :
+LISTE=( "[1] Reset (with cache)"
+        "[2] Reset (without cache)"
         "[3] Clean cache"
-        "[4] Clean cache (With 'Rm')"
-        "[5] Update projet" )
+        "[4] Clean cache (with the -Rf argument)"
+        "[5] Update projet (Composer + Bower + BDD)"
+        "[6] Remove media files" )
 
+# Choices available
 select CHOIX in "${LISTE[@]}" ; do
     case $REPLY in
         1)
         echo ""
-        echo "Start reset"
-        echo "-----------"
+        echo "------------------------"
+        echo "Start reset (with cache)"
+        echo "------------------------"
         php bin/console doctrine:database:drop --force
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
-        rm -Rf web/uploads/wysiwyg/source/*
-        rm -Rf web/uploads/wysiwyg/thumbs
-        rm -Rf web/uploads/users/avatars/*
-        echo "Reset (Without cache) OK"
+
+        php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
+        echo "-----------------------"
+        echo "Reset (with cache) [OK]"
+        echo "-----------------------"
         break
         ;;
 
         2)
         echo ""
-        echo "Start reset"
-        echo "-----------"
+        echo "---------------------------"
+        echo "Start reset (without cache)"
+        echo "---------------------------"
         php bin/console doctrine:database:drop --force
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
-        rm -Rf web/uploads/wysiwyg/source/*
-        rm -Rf web/uploads/wysiwyg/thumbs
-        rm -Rf web/uploads/users/avatars/*
-        echo ""
-        echo "Start cache:clear (dev & prod)"
-        echo "------------------------------"
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
-        echo "Reset OK"
+        echo "--------------------------"
+        echo "Reset (without cache) [OK]"
+        echo "--------------------------"
         break
         ;;
 
         3)
         echo ""
-        echo "Start cache:clear (dev & prod)"
-        echo "------------------------------"
+        echo "-----------------"
+        echo "Start clean cache"
+        echo "-----------------"
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo "Clean cache OK"
+        echo "----------------"
+        echo "Clean cache [OK]"
+        echo "----------------"
         break
         ;;
 
         4)
         echo ""
-        echo "Start cache:clear (dev & prod) + 'Rm'"
-        echo "-------------------------------------"
+        echo "-----------------------------------------"
+        echo "Start clean cache (with the -Rf argument)"
+        echo "-----------------------------------------"
         rm -Rf var/cache/*
         rm -Rf var/sessions/*
         rm -Rf var/logs/*
+
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo "Clean cache (Avec du 'Rm') OK"
+        echo "----------------------------------------"
+        echo "Clean cache (with the -Rf argument) [OK]"
+        echo "----------------------------------------"
         break
         ;;
 
         5)
         echo ""
-        echo "Start update projet"
-        echo "-------------------------------------"
+        echo "--------------------------------------------"
+        echo "Start update projet (Composer + Bower + BDD)"
+        echo "--------------------------------------------"
         composer update
         bower update
         php bin/console doctrine:schema:update --force
-        echo ""
-        echo "Start cache:clear (dev & prod) + 'Rm'"
-        echo "-------------------------------------"
-        rm -Rf var/cache/*
-        rm -Rf var/sessions/*
-        rm -Rf var/logs/*
+
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo "Clean cache (With 'Rm') OK"
+        echo "-------------------------------------------"
+        echo "Update projet (Composer + Bower + BDD) [OK]"
+        echo "-------------------------------------------"
+        break
+        ;;
+
+        6)
+        echo ""
+        echo "------------------------"
+        echo "Start remove media files"
+        echo "------------------------"
+        rm -Rf web/uploads/files/*
+        rm -Rf web/uploads/users/avatars/*
+        rm -Rf web/uploads/wysiwyg/source/*
+        rm -Rf web/uploads/wysiwyg/thumbs
+        echo "-----------------------"
+        echo "Remove media files [OK]"
+        echo "-----------------------"
         break
         ;;
     esac
 done
 
-echo Close in 5 secondes...
+echo ""
+echo ""
+echo "********************************"
+echo "********************************"
+echo "Close in less than 5 secondes..."
+echo "********************************"
+echo "********************************"
 sleep 5
