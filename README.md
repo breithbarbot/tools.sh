@@ -9,6 +9,7 @@ Tools for symfony 3
 <br>
 
 ## Step 2 (Optional) - Convert file `dos` to `unix` :
+If you have a message "Aucun fichier ou dossier de ce type", run :
     apt-get install dos2unix
 
 And run :
