@@ -12,7 +12,7 @@ PS3='Selected : '
 LISTE=( "[1] Reset (with cache)"
         "[2] Reset (without cache)"
         "[3] Clean cache"
-        "[4] Clean cache (with the -Rf argument)"
+        "[4] Clean cache (with the rm command and the -Rf argument)"
         "[5] Update projet (Composer + Bower + BDD)"
         "[6] Remove media files" )
 
@@ -68,7 +68,7 @@ select CHOIX in "${LISTE[@]}" ; do
         4)
         echo ""
         echo "-----------------------------------------"
-        echo "Start clean cache (with the -Rf argument)"
+        echo "Start clean cache (with the rm command and the -Rf argument)"
         echo "-----------------------------------------"
         rm -Rf var/cache/*
         rm -Rf var/sessions/*
@@ -77,7 +77,7 @@ select CHOIX in "${LISTE[@]}" ; do
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
         echo "----------------------------------------"
-        echo "Clean cache (with the -Rf argument) [OK]"
+        echo "Clean cache (with the rm command and the -Rf argument) [OK]"
         echo "----------------------------------------"
         break
         ;;
