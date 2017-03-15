@@ -31,9 +31,9 @@ select CHOIX in "${LISTE[@]}" ; do
 
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo -e "\e[0m \e[1;32;40m -----------------------\e[0m"
-        echo -e "\e[0m \e[1;32;40m [OK] Reset (with cache) \e[0m"
-        echo -e "\e[0m \e[1;32;40m -----------------------\e[0m"
+        echo -e "\033[42;30m ----------------------- \033[0m"
+        echo -e "\033[42;30m [OK] Reset (with cache) \033[0m"
+        echo -e "\033[42;30m ----------------------- \033[0m"
         break
         ;;
 
@@ -46,9 +46,9 @@ select CHOIX in "${LISTE[@]}" ; do
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
-        echo -e "\e[0m \e[1;32;40m --------------------------\e[0m"
-        echo -e "\e[0m \e[1;32;40m [OK] Reset (without cache)"
-        echo -e "\e[0m \e[1;32;40m --------------------------\e[0m"
+        echo -e "\033[42;30m -------------------------- \033[0m"
+        echo -e "\033[42;30m [OK] Reset (without cache) \033[0m"
+        echo -e "\033[42;30m -------------------------- \033[0m"
         break
         ;;
 
@@ -59,9 +59,9 @@ select CHOIX in "${LISTE[@]}" ; do
         echo "-----------------"
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo -e "\e[0m \e[1;32;40m ----------------\e[0m"
-        echo -e "\e[0m \e[1;32;40m [OK] Clean cache"
-        echo -e "\e[0m \e[1;32;40m ----------------\e[0m"
+        echo -e "\033[42;30m ---------------- \033[0m"
+        echo -e "\033[42;30m [OK] Clean cache \033[0m"
+        echo -e "\033[42;30m ---------------- \033[0m"
         break
         ;;
 
@@ -76,9 +76,9 @@ select CHOIX in "${LISTE[@]}" ; do
 
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo -e "\e[0m \e[1;32;40m -----------------------------------------------------------\e[0m"
-        echo -e "\e[0m \e[1;32;40m [OK] Clean cache (with the rm command and the -Rf argument)"
-        echo -e "\e[0m \e[1;32;40m -----------------------------------------------------------\e[0m"
+        echo -e "\033[42;30m ----------------------------------------------------------- \033[0m"
+        echo -e "\033[42;30m [OK] Clean cache (with the rm command and the -Rf argument) \033[0m"
+        echo -e "\033[42;30m ----------------------------------------------------------- \033[0m"
         break
         ;;
 
@@ -93,9 +93,9 @@ select CHOIX in "${LISTE[@]}" ; do
 
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
-        echo -e "\e[0m \e[1;32;40m -------------------------------------------\e[0m"
-        echo -e "\e[0m \e[1;32;40m [OK] Update projet (Composer + Bower + BDD)"
-        echo -e "\e[0m \e[1;32;40m -------------------------------------------\e[0m"
+        echo -e "\033[42;30m ------------------------------------------- \033[0m"
+        echo -e "\033[42;30m [OK] Update projet (Composer + Bower + BDD) \033[0m"
+        echo -e "\033[42;30m ------------------------------------------- \033[0m"
         break
         ;;
 
@@ -108,9 +108,9 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf web/uploads/users/avatars/*
         rm -Rf web/uploads/wysiwyg/source/*
         rm -Rf web/uploads/wysiwyg/thumbs
-        echo -e "\e[0m \e[1;32;40m -----------------------\e[0m"
-        echo -e "\e[0m \e[1;32;40m [OK] Remove media files"
-        echo -e "\e[0m \e[1;32;40m -----------------------\e[0m"
+        echo -e "\033[42;30m ----------------------- \033[0m"
+        echo -e "\033[42;30m [OK] Remove media files \033[0m"
+        echo -e "\033[42;30m ----------------------- \033[0m"
         break
         ;;
     esac
