@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
 # File executable on UNIX (755): chmod +x tools.sh
+
 # apt-get install dos2unix
 # and run : dos2unix tools.sh
+
+# Windows user, start in admin : php bin/console assets:install --symlink
+
 # start run : ./tools.sh
 
 # Prompt
@@ -14,7 +18,8 @@ LISTE=( "Reset (with cache)"
         "Clean cache"
         "Clean cache (with the rm command and the -Rf argument)"
         "Update projet (Composer + Bower + BDD)"
-        "Remove media files" )
+        "Remove media files"
+        "Start empty project" )
 
 # Choices available
 select CHOIX in "${LISTE[@]}" ; do
@@ -111,6 +116,43 @@ select CHOIX in "${LISTE[@]}" ; do
         echo -e "\033[42;30m ----------------------- \033[0m"
         echo -e "\033[42;30m [OK] Remove media files \033[0m"
         echo -e "\033[42;30m ----------------------- \033[0m"
+        break
+        ;;
+
+        7)
+        echo ""
+        echo "-------------------"
+        echo "Start empty project"
+        echo "-------------------"
+        bower update
+
+        composer update
+        php bin/console cache:clear --no-warmup # no-root
+		php bin/console assets:install --symlink
+
+        mkdir var/
+
+        HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+        sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
+        sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
+
+        chmod -R 757 web/uploads/
+
+        php bin/console doctrine:database:drop --force
+        php bin/console doctrine:database:create
+        php bin/console doctrine:schema:update --force
+        php bin/console doctrine:fixtures:load
+
+        php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
+
+        cp ./.sources/config.ini.dist ./.sources/config.ini
+        echo -e "\033[42;30m ------------------------ \033[0m"
+        echo -e "\033[42;30m [OK] Start empty project \033[0m"
+        echo -e "\033[42;30m ------------------------ \033[0m"
+        echo ""
+        echo "Edit config file (Optional) : .sources/config.ini"
+        echo ""
         break
         ;;
     esac
