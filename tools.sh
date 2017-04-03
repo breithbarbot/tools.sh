@@ -127,7 +127,7 @@ select CHOIX in "${LISTE[@]}" ; do
         bower update
 
         composer update
-        php bin/console cache:clear --no-warmup # no-root
+        php bin/console cache:clear --no-warmup
 		php bin/console assets:install --symlink
 
         mkdir var/
@@ -136,7 +136,7 @@ select CHOIX in "${LISTE[@]}" ; do
         sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
         sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
 
-        chmod -R 757 web/uploads/
+        chmod -R 775 web/uploads/
 
         php bin/console doctrine:database:drop --force
         php bin/console doctrine:database:create
