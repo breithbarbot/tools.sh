@@ -128,7 +128,7 @@ select CHOIX in "${LISTE[@]}" ; do
 
         composer update
         php bin/console cache:clear --no-warmup
-		php bin/console assets:install --symlink
+        php bin/console assets:install --symlink
 
         HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
         setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
