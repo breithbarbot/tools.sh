@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-# File executable on UNIX (755): chmod +x tools.sh
+# Change the rights for scripts to be executable (755): chmod +x tools.sh
+# Execute : ./tools.sh
 
+# For convert...
 # apt-get install dos2unix
 # and run : dos2unix tools.sh
 
-# Windows user, start in admin : php bin/console assets:install --symlink
+# Windows user, start in *admin* : php bin/console assets:install --symlink
 
-# start run : ./tools.sh
 
 # Prompt
 PS3='Selected : '
