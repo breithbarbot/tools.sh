@@ -95,8 +95,11 @@ select CHOIX in "${LISTE[@]}" ; do
         echo '--------------------------------------------'
         echo 'Start update projet (Composer + Bower + BDD)'
         echo '--------------------------------------------'
+        rm -Rf web/bundles/*
+
         composer update
         bower update
+
         php bin/console doctrine:schema:update --force
 
         php bin/console cache:clear
@@ -131,7 +134,6 @@ select CHOIX in "${LISTE[@]}" ; do
 
         composer update
         php bin/console cache:clear --no-warmup
-        php bin/console assets:install --symlink
 
         HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
         setfacl -R -m u:'$HTTPDUSER':rwX -m u:`whoami`:rwX var
