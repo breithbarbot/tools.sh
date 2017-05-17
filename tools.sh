@@ -136,10 +136,11 @@ select CHOIX in "${LISTE[@]}" ; do
         php bin/console cache:clear --no-warmup
 
         HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
-        setfacl -R -m u:'$HTTPDUSER':rwX -m u:`whoami`:rwX var
-        setfacl -dR -m u:'$HTTPDUSER':rwX -m u:`whoami`:rwX var
+        setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
+        setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
 
-        chmod -R 757 web/uploads/
+        chmod -R 757 web/uploads
+        chown -R "$HTTPDUSER":"$HTTPDUSER" web/uploads
 
         php bin/console doctrine:database:drop --force
         php bin/console doctrine:database:create
