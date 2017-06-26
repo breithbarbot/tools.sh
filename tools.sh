@@ -139,8 +139,9 @@ select CHOIX in "${LISTE[@]}" ; do
         setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
         setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
 
-        chmod -R 757 web/uploads
-        chown -R "$HTTPDUSER":"$HTTPDUSER" web/uploads
+        chmod -R 757 web/uploads/
+        chmod 777 web/uploads/
+        chown -R "$HTTPDUSER":"$HTTPDUSER" web/uploads/
 
         php bin/console doctrine:database:drop --force
         php bin/console doctrine:database:create
