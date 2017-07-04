@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Copyright (c) 2017 Breith Barbot <b.breith@gmail.com>.
+# For Symfony version >= 3.3.3
 
 # Change the rights for scripts to be executable (755): chmod +x tools.sh
 # Execute : ./tools.sh
@@ -20,7 +21,7 @@ LISTE=( 'Reset (with cache)'
         'Reset (without cache)'
         'Clean cache'
         'Clean cache (with the rm command and the -Rf argument)'
-        'Update projet (Composer + Bower + BDD)'
+        'Update projet (Composer + yarn + BDD)'
         'Remove media files'
         'Start empty project' )
 
@@ -37,8 +38,8 @@ select CHOIX in "${LISTE[@]}" ; do
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
 
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear --no-warmup
+        php bin/console cache:clear --no-warmup -e prod
         echo -e '\033[42;30m ----------------------- \033[0m'
         echo -e '\033[42;30m [OK] Reset (with cache) \033[0m'
         echo -e '\033[42;30m ----------------------- \033[0m'
@@ -65,8 +66,8 @@ select CHOIX in "${LISTE[@]}" ; do
         echo '-----------------'
         echo 'Start clean cache'
         echo '-----------------'
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear --no-warmup
+        php bin/console cache:clear --no-warmup -e prod
         echo -e '\033[42;30m ---------------- \033[0m'
         echo -e '\033[42;30m [OK] Clean cache \033[0m'
         echo -e '\033[42;30m ---------------- \033[0m'
@@ -82,8 +83,8 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf var/sessions/*
         rm -Rf var/logs/*
 
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear --no-warmup
+        php bin/console cache:clear --no-warmup -e prod
         echo -e '\033[42;30m ----------------------------------------------------------- \033[0m'
         echo -e '\033[42;30m [OK] Clean cache (with the rm command and the -Rf argument) \033[0m'
         echo -e '\033[42;30m ----------------------------------------------------------- \033[0m'
@@ -93,19 +94,19 @@ select CHOIX in "${LISTE[@]}" ; do
         5)
         echo ''
         echo '--------------------------------------------'
-        echo 'Start update projet (Composer + Bower + BDD)'
+        echo 'Start update projet (Composer + yarn + BDD)'
         echo '--------------------------------------------'
         rm -Rf web/bundles/*
 
         composer update
-        bower update
+        yarn upgrade --modules-folder ./web/assets/node_modules
 
         php bin/console doctrine:schema:update --force
 
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear --no-warmup
+        php bin/console cache:clear --no-warmup -e prod
         echo -e '\033[42;30m ------------------------------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Update projet (Composer + Bower + BDD) \033[0m'
+        echo -e '\033[42;30m [OK] Update projet (Composer + yarn + BDD) \033[0m'
         echo -e '\033[42;30m ------------------------------------------- \033[0m'
         break
         ;;
@@ -130,7 +131,7 @@ select CHOIX in "${LISTE[@]}" ; do
         echo '-------------------'
         echo 'Start empty project'
         echo '-------------------'
-        bower update
+        yarn install --modules-folder ./web/assets/node_modules
 
         composer update
         php bin/console cache:clear --no-warmup
@@ -148,8 +149,8 @@ select CHOIX in "${LISTE[@]}" ; do
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
 
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:clear --no-warmup
+        php bin/console cache:clear --no-warmup -e prod
 
         cp ./.sources/config.ini.dist ./.sources/config.ini
         echo -e '\033[42;30m ------------------------ \033[0m'
