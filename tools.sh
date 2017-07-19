@@ -12,6 +12,15 @@
 
 # Windows user, start in *admin* : php bin/console assets:install --symlink
 
+# tools.hs should not be run as root to prevent Symfony's cache fails with wrong permissions on /var folders
+if [[ "$OSTYPE" == linux* ]]; then
+    USER="`whoami`"
+    if [[ "$USER" == "root" ]]; then
+        echo -e "\033[1;31mAttention ! Vous executez le script en tant que root\x1b[m";
+	exit 1
+    fi
+fi
+
 
 # Prompt
 PS3='Selected : '
