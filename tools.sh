@@ -1,16 +1,43 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2017 Breith Barbot <b.breith@gmail.com>.
-# For Symfony version >= 3.3.3
+##########################################################
+# Copyright (c) 2017 Breith Barbot <b.breith@gmail.com>. #
+# Source : https://gitlab.com/snippets/1672053           #
+# For : Symfony 3.3 and later                            #
+##########################################################
 
-# Change the rights for scripts to be executable (755): chmod +x tools.sh
-# Execute : ./tools.sh
 
-# For convert...
-# apt-get install dos2unix
-# and run : dos2unix tools.sh
+##########################################################
+#                        README
+##########################################################
+# Step 1 - File executable on UNIX (755) :
+##########################################################
+#
+# `chmod +x tools.sh`
+#
+#
+# Step 2 (Optional) - Convert file dos to unix :
+##########################################################
+# If you have a message "Aucun fichier ou dossier de ce type", run :
+#
+# `apt-get install dos2unix`
+# And run : `dos2unix tools.sh`
+#
+#
+# Step 3 - Run :
+##########################################################
+# `./tools.sh`
+#
+##########################################################
 
-# Windows user, start in *admin* : php bin/console assets:install --symlink
+
+##########################################################
+# Only for windows user,
+# run command in *admin* :
+#
+# php bin/console assets:install --symlink
+##########################################################
+
 
 # tools.sh should not be run as root to prevent Symfony's cache fails with wrong permissions on /var folders
 if [[ "$OSTYPE" == linux* ]]; then
@@ -110,7 +137,7 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf web/bundles/*
 
         composer update
-        yarn upgrade --modules-folder ./web/assets/node_modules
+        yarn upgrade
 
         php bin/console doctrine:schema:update --force
 
@@ -142,7 +169,7 @@ select CHOIX in "${LISTE[@]}" ; do
         echo '-------------------'
         echo 'Start empty project'
         echo '-------------------'
-        yarn install --modules-folder ./web/assets/node_modules
+        yarn install
 
         composer update
         php bin/console cache:clear --no-warmup
