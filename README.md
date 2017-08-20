@@ -14,10 +14,10 @@ If you have a message "Aucun fichier ou dossier de ce type", run :
 
     apt-get install dos2unix
 
-And run :
+And run : `dos2unix tools.sh`
 
-    dos2unix tools.sh
+<br>
 
-## Run
+## Step 3 - Run :
 
     ./tools.sh
