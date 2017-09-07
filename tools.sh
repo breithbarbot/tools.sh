@@ -137,7 +137,7 @@ select CHOIX in "${LISTE[@]}" ; do
         rm -Rf web/bundles/*
 
         composer update
-        yarn upgrade
+        yarn upgrade --modules-folder ./web/assets/node_modules
 
         php bin/console doctrine:schema:update --force
 
@@ -169,7 +169,7 @@ select CHOIX in "${LISTE[@]}" ; do
         echo '-------------------'
         echo 'Start empty project'
         echo '-------------------'
-        yarn install
+        yarn install --modules-folder ./web/assets/node_modules
 
         composer update
         php bin/console cache:clear --no-warmup
