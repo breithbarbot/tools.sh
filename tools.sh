@@ -1,41 +1,35 @@
 #!/usr/bin/env bash
 
 ##########################################################
-# Copyright (c) 2017 Breith Barbot <b.breith@gmail.com>. #
-# Source : https://gitlab.com/snippets/1672053           #
-# For : Symfony 3.3 and later                            #
+# Copyright (c) 2018 Breith Barbot <b.breith@gmail.com>. #
+# Source : https://gitlab.com/breithbarbot/tools.sh      #
+# For : Symfony 3.4 and later                            #
 ##########################################################
 
 
 ##########################################################
-#                        README
+#                        README                          #
 ##########################################################
+#
 # Step 1 - File executable on UNIX (755) :
-##########################################################
+#=========================================
 #
 # `chmod +x tools.sh`
 #
 #
 # Step 2 (Optional) - Convert file dos to unix :
-##########################################################
-# If you have a message "Aucun fichier ou dossier de ce type", run :
+#===============================================
 #
-# `apt-get install dos2unix`
-# And run : `dos2unix tools.sh`
+# > If you have a message "No file or folder of this type"
+#
+# Install : `apt-get install dos2unix`
+# Run : `dos2unix tools.sh`
 #
 #
-# Step 3 - Run :
-##########################################################
+# Step 3 - Execute :
+#===================
 # `./tools.sh`
 #
-##########################################################
-
-
-##########################################################
-# Only for windows user,
-# run command in *admin* :
-#
-# php bin/console assets:install --symlink
 ##########################################################
 
 
@@ -46,7 +40,6 @@ if [[ "$OSTYPE" == linux* ]]; then
         echo -e '\033[1;31m----------------------------------------------------\x1b[m'
         echo -e "\033[1;31mAttention ! Vous executez le script en tant que root\x1b[m"
         echo -e '\033[1;31m----------------------------------------------------\x1b[m'
-        exit 1
     fi
 fi
 
@@ -54,149 +47,105 @@ fi
 # Prompt
 PS3='Selected : '
 
-# List of available choices :
-LISTE=( 'Reset (with cache)'
-        'Reset (without cache)'
-        'Clean cache'
-        'Clean cache (with the rm command and the -Rf argument)'
-        'Update projet (Composer + yarn + BDD)'
-        'Remove media files'
-        'Start empty project' )
+# List of available commands :
+LIST=('Install project'
+      'Clean cache'
+      'Update project (Composer + yarn + DB)'
+      'Reset project')
 
-# Choices available
-select CHOIX in "${LISTE[@]}" ; do
+# Commands available
+select CHOICE in "${LIST[@]}" ; do
     case $REPLY in
         1)
         echo ''
-        echo '------------------------'
-        echo 'Start reset (with cache)'
-        echo '------------------------'
+        echo '---------------'
+        echo 'Install project'
+        echo '---------------'
+        cp ./.env.dist ./.env
+
+        composer install
+        php bin/console assets:install --symlink
+
+        yarn install
+        yarn run encore production
+
+        chmod -R 775 public/uploads/
+        chmod 777 public/uploads/
+        chown -R "$HTTPDUSER":"$HTTPDUSER" public/uploads/
+
         php bin/console doctrine:database:drop --force
+
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
 
-        php bin/console cache:clear --no-warmup
-        php bin/console cache:clear --no-warmup -e prod
-        echo -e '\033[42;30m ----------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Reset (with cache) \033[0m'
-        echo -e '\033[42;30m ----------------------- \033[0m'
+        php bin/console cache:clear
+
+        cp ./.sources/config.ini.dist ./.sources/config.ini
+        echo -e '\033[42;30m -------------------- \033[0m'
+        echo -e '\033[42;30m [OK] Install project \033[0m'
+        echo -e '\033[42;30m -------------------- \033[0m'
         break
         ;;
 
         2)
         echo ''
-        echo '---------------------------'
-        echo 'Start reset (without cache)'
-        echo '---------------------------'
-        php bin/console doctrine:database:drop --force
-        php bin/console doctrine:database:create
-        php bin/console doctrine:schema:update --force
-        php bin/console doctrine:fixtures:load
-        echo -e '\033[42;30m -------------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Reset (without cache) \033[0m'
-        echo -e '\033[42;30m -------------------------- \033[0m'
-        break
-        ;;
+        echo '-----------'
+        echo 'Clean cache'
+        echo '-----------'
+        echo -n 'Clean the var folder? (y/n)'
+        read answer
+        if echo "$answer" | grep -iq '^y' ;then
+            rm -Rf var/*
+        fi
 
-        3)
-        echo ''
-        echo '-----------------'
-        echo 'Start clean cache'
-        echo '-----------------'
-        php bin/console cache:clear --no-warmup
-        php bin/console cache:clear --no-warmup -e prod
+        php bin/console cache:clear
         echo -e '\033[42;30m ---------------- \033[0m'
         echo -e '\033[42;30m [OK] Clean cache \033[0m'
         echo -e '\033[42;30m ---------------- \033[0m'
         break
         ;;
 
-        4)
+        3)
         echo ''
-        echo '-----------------------------------------------------------'
-        echo 'Start clean cache (with the rm command and the -Rf argument)'
-        echo '-----------------------------------------------------------'
-        rm -Rf var/cache/*
-        rm -Rf var/sessions/*
-        rm -Rf var/logs/*
-
-        php bin/console cache:clear --no-warmup
-        php bin/console cache:clear --no-warmup -e prod
-        echo -e '\033[42;30m ----------------------------------------------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Clean cache (with the rm command and the -Rf argument) \033[0m'
-        echo -e '\033[42;30m ----------------------------------------------------------- \033[0m'
-        break
-        ;;
-
-        5)
-        echo ''
-        echo '--------------------------------------------'
-        echo 'Start update projet (Composer + yarn + BDD)'
-        echo '--------------------------------------------'
-        rm -Rf web/bundles/*
+        echo '-------------------------------------'
+        echo 'Update project (Composer + yarn + DB)'
+        echo '-------------------------------------'
+        rm -Rf public/bundles/*
 
         composer update
-        yarn upgrade --modules-folder ./web/assets/node_modules
+        php bin/console assets:install --symlink
+
+        yarn upgrade
 
         php bin/console doctrine:schema:update --force
 
-        php bin/console cache:clear --no-warmup
-        php bin/console cache:clear --no-warmup -e prod
-        echo -e '\033[42;30m ------------------------------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Update projet (Composer + yarn + BDD) \033[0m'
-        echo -e '\033[42;30m ------------------------------------------- \033[0m'
+        php bin/console cache:clear
+        echo -e '\033[42;30m ------------------------------------------ \033[0m'
+        echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) \033[0m'
+        echo -e '\033[42;30m ------------------------------------------ \033[0m'
         break
         ;;
 
-        6)
+        4)
         echo ''
-        echo '------------------------'
-        echo 'Start remove media files'
-        echo '------------------------'
-        rm -Rf web/uploads/files/*
-        rm -Rf web/uploads/users/avatars/*
-        rm -Rf web/uploads/wysiwyg/source/*
-        rm -Rf web/uploads/wysiwyg/thumbs
-        echo -e '\033[42;30m ----------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Remove media files \033[0m'
-        echo -e '\033[42;30m ----------------------- \033[0m'
-        break
-        ;;
-
-        7)
-        echo ''
-        echo '-------------------'
-        echo 'Start empty project'
-        echo '-------------------'
-        yarn install --modules-folder ./web/assets/node_modules
-
-        composer update
-        php bin/console cache:clear --no-warmup
-
-        HTTPDUSER=$(ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
-        setfacl -dR -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX var
-        setfacl -R -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX var
-
-        chmod -R 775 web/uploads/
-        chmod 777 web/uploads/
-        chown -R "$HTTPDUSER":"$HTTPDUSER" web/uploads/
-
+        echo '-------------'
+        echo 'Reset project'
+        echo '-------------'
         php bin/console doctrine:database:drop --force
+
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
 
-        php bin/console cache:clear --no-warmup
-        php bin/console cache:clear --no-warmup -e prod
-
-        cp ./.sources/config.ini.dist ./.sources/config.ini
-        echo -e '\033[42;30m ------------------------ \033[0m'
-        echo -e '\033[42;30m [OK] Start empty project \033[0m'
-        echo -e '\033[42;30m ------------------------ \033[0m'
-        echo ''
-        echo 'Edit config file (Optional) : .sources/config.ini'
-        echo ''
+        echo -n 'Clean cache? (y/n)'
+        read answer
+        if echo "$answer" | grep -iq '^y' ;then
+            php bin/console cache:clear
+        fi
+        echo -e '\033[42;30m ------------------ \033[0m'
+        echo -e '\033[42;30m [OK] Reset project \033[0m'
+        echo -e '\033[42;30m ------------------ \033[0m'
         break
         ;;
     esac

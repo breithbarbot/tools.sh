@@ -1,5 +1,5 @@
 ##########################################################
-# Copyright (c) 2017 Breith Barbot <b.breith@gmail.com>. #
+# Copyright (c) 2018 Breith Barbot <b.breith@gmail.com>. #
 # Source : https://gitlab.com/snippets/1672174           #
 ##########################################################
 
@@ -13,7 +13,10 @@
 # Assets managed by yarn #
 ##########################
 node_modules/
+.sass-cache/
 /yarn.lock
+/yarn-error.log
+/npm-debug.log
 
 
 # OS generated files #
@@ -31,3 +34,7 @@ Thumbs.db
 ##############
 /.idea/
 /*.iml
+
+
+# Custom #
+##########

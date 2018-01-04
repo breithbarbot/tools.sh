@@ -1,23 +1,22 @@
-# Tools.sh
-> Tools for symfony 3
+# tools.sh
+> Tools for symfony 3.4 and later
 
 <br>
 
 ## Step 1 - File executable on UNIX (755) :
 
-    chmod +x tools.sh
+`chmod +x tools.sh`
 
 <br>
 
-## Step 2 (Optional) - Convert file `dos` to `unix` :
-If you have a message "Aucun fichier ou dossier de ce type", run :
+## Step 2 (Optional) - Convert file dos to unix :
 
-    apt-get install dos2unix
+> If you have a message "No file or folder of this type"
 
-And run : `dos2unix tools.sh`
+Install : `apt-get install dos2unix`
 
-<br>
+Run : `dos2unix tools.sh`
 
-## Step 3 - Run :
+## Step 3 - Execute :
 
-    ./tools.sh
+`./tools.sh`
