@@ -1,5 +1,5 @@
 # tools.sh
-> Tools for symfony 3.4 and later
+> Command tools for symfony 3.4 and later
 
 <br>
 
