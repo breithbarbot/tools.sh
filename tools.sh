@@ -36,7 +36,7 @@
 # tools.sh should not be run as root to prevent Symfony's cache fails with wrong permissions on /var folders
 if [[ "$OSTYPE" == linux* ]]; then
     USER="`whoami`"
-    if [[ "$USER" == "root" ]]; then
+    if [[ "$USER" == 'root' ]]; then
         echo -e '\033[1;31m----------------------------------------------------\x1b[m'
         echo -e "\033[1;31mAttention ! Vous executez le script en tant que root\x1b[m"
         echo -e '\033[1;31m----------------------------------------------------\x1b[m'
