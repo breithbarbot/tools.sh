@@ -93,7 +93,7 @@ select CHOICE in "${LIST[@]}" ; do
         echo '-----------'
         echo 'Clean cache'
         echo '-----------'
-        echo -n 'Clean the var folder? (y/n)'
+        echo -n 'Clean the var folder? (y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
             rm -Rf var/*
@@ -138,7 +138,7 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
 
-        echo -n 'Clean cache? (y/n)'
+        echo -n 'Clean cache? (y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
             php bin/console cache:clear
