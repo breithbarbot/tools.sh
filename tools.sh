@@ -63,10 +63,18 @@ select CHOICE in "${LIST[@]}" ; do
         echo '---------------'
         cp ./.env.dist ./.env
 
-        echo -n 'Edit .env? (y/N)'
-        read answer
-        if echo "$answer" | grep -iq '^y' ;then
-            editor ./.env
+        if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
+            echo -n 'Edit .env? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+                if [ -x "$(command -v editor)" ]; then
+                    editor ./.env
+                else
+                    nano ./.env
+                fi
+            fi
+        else
+            echo 'Edit your .env file if necessary'
         fi
 
         composer install
@@ -77,7 +85,6 @@ select CHOICE in "${LIST[@]}" ; do
 
         chmod -R 775 public/uploads/
         chmod 777 public/uploads/
-        chown -R "$HTTPDUSER":"$HTTPDUSER" public/uploads/
 
         php bin/console doctrine:database:drop --force
 
