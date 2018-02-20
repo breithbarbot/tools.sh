@@ -131,6 +131,7 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn upgrade
+        yarn run encore production
 
         php bin/console doctrine:schema:update --force
         echo -e '\033[42;30m ------------------------------------------ \033[0m'
