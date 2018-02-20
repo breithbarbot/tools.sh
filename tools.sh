@@ -85,6 +85,7 @@ select CHOICE in "${LIST[@]}" ; do
 
         chmod -R 775 public/uploads/
         chmod 777 public/uploads/
+        chown -R root:www-data public/uploads/
 
         php bin/console doctrine:database:drop --force
 
