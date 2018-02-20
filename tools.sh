@@ -63,6 +63,12 @@ select CHOICE in "${LIST[@]}" ; do
         echo '---------------'
         cp ./.env.dist ./.env
 
+        echo -n 'Edit .env? (y/N)'
+        read answer
+        if echo "$answer" | grep -iq '^y' ;then
+            editor ./.env
+        fi
+
         composer install
         php bin/console assets:install --symlink
 
