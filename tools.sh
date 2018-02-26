@@ -51,7 +51,8 @@ PS3='Selected : '
 LIST=('Install project'
       'Clean cache'
       'Update project (Composer + yarn + DB)'
-      'Reset project')
+      'Reset project'
+      'Install project in production environement')
 
 # Commands available
 select CHOICE in "${LIST[@]}" ; do
@@ -77,7 +78,9 @@ select CHOICE in "${LIST[@]}" ; do
             echo 'Edit your .env file if necessary'
         fi
 
+        rm -fr ./vendor/*
         composer install
+        composer update
         php bin/console assets:install --symlink
 
         yarn install
@@ -94,6 +97,7 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console doctrine:fixtures:load
 
         php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
 
         cp ./.sources/config.ini.dist ./.sources/config.ini
         echo -e '\033[42;30m -------------------- \033[0m'
@@ -110,10 +114,11 @@ select CHOICE in "${LIST[@]}" ; do
         echo -n 'Clean the var folder? (y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
-            rm -Rf var/*
+            rm -fr var/*
         fi
 
         php bin/console cache:clear
+        php bin/console cache:clear --env=prod --no-debug
         echo -e '\033[42;30m ---------------- \033[0m'
         echo -e '\033[42;30m [OK] Clean cache \033[0m'
         echo -e '\033[42;30m ---------------- \033[0m'
@@ -125,7 +130,7 @@ select CHOICE in "${LIST[@]}" ; do
         echo '-------------------------------------'
         echo 'Update project (Composer + yarn + DB)'
         echo '-------------------------------------'
-        rm -Rf public/bundles/*
+        rm -fr public/bundles/*
 
         composer update
         php bin/console assets:install --symlink
@@ -155,10 +160,58 @@ select CHOICE in "${LIST[@]}" ; do
         read answer
         if echo "$answer" | grep -iq '^y' ;then
             php bin/console cache:clear
+            php bin/console cache:clear --env=prod --no-debug
         fi
         echo -e '\033[42;30m ------------------ \033[0m'
         echo -e '\033[42;30m [OK] Reset project \033[0m'
         echo -e '\033[42;30m ------------------ \033[0m'
+        break
+        ;;
+
+        5)
+        echo ''
+        echo '------------------------------------------'
+        echo 'Install project in production environement'
+        echo '------------------------------------------'
+        echo 'See : https://symfony.com/doc/current/deployment.html'
+
+        php bin/symfony_requirements
+
+        if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
+            echo -n 'Edit .env? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+                if [ -x "$(command -v editor)" ]; then
+                    editor ./.env
+                else
+                    nano ./.env
+                fi
+            fi
+        else
+            echo 'Edit your .env file if necessary'
+        fi
+
+        rm -fr ./vendor/*
+        composer install --no-dev --optimize-autoloader
+        composer update --no-dev --optimize-autoloader
+        php bin/console assets:install --symlink
+
+        yarn install
+        yarn run encore production
+
+        chmod -R 775 public/uploads/
+        chmod 777 public/uploads/
+        chown -R root:www-data public/uploads/
+
+        php bin/console cache:clear --env=prod --no-debug
+
+        php bin/console doctrine:database:create
+        php bin/console doctrine:schema:update --force
+
+        php bin/console assetic:dump --env=prod --no-debug
+        echo -e '\033[42;30m ----------------------------------------------- \033[0m'
+        echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
+        echo -e '\033[42;30m ----------------------------------------------- \033[0m'
         break
         ;;
     esac
