@@ -3,7 +3,7 @@
 ##########################################################
 # Copyright (c) 2018 Breith Barbot <b.breith@gmail.com>. #
 # Source : https://gitlab.com/breithbarbot/tools.sh      #
-# For : Symfony Flex                                     #
+# For Symfony Flex                                       #
 ##########################################################
 
 
@@ -33,13 +33,24 @@
 ##########################################################
 
 
+# Basic information
+echo -e '\033[0;36m*****************************************\033[0m'
+echo -e '\033[0;36m*****************************************\033[0m'
+echo -e '\033[0;36m**                                     **\033[0m'
+echo -e '\033[0;36m**\033[0m      \033[1;37mTools.sh for Symfony Flex\033[0m      \033[0;36m**\033[0m'
+echo -e '\033[0;36m**                                     **\033[0m'
+echo -e '\033[0;36m*****************************************\033[0m'
+echo -e '\033[0;36m*****************************************\033[0m'
+echo -e '\n'
+
+
 # tools.sh should not be run as root to prevent Symfony's cache fails with wrong permissions on /var folders
 if [[ "$OSTYPE" == linux* ]]; then
     USER="`whoami`"
     if [[ "$USER" == 'root' ]]; then
-        echo -e '\033[1;31m------------------------------------\x1b[m'
-        echo -e '\033[1;31mWarning ! You run the script as root\x1b[m'
-        echo -e '\033[1;31m------------------------------------\x1b[m'
+        echo -e '\033[1;31m------------------------------------\033[0m'
+        echo -e '\033[1;31mWarning ! You run the script as root\033[0m'
+        echo -e '\033[1;31m------------------------------------\033[0m'
     fi
 fi
 
@@ -84,11 +95,14 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn install
-        yarn run encore production
+        yarn build
 
-        chmod -R 775 public/uploads/
-        chmod 777 public/uploads/
-        chown -R root:www-data public/uploads/
+        UPLOAD_FOLDER='public/uploads/'
+        if [ -d "$UPLOAD_FOLDER" ]; then
+            chmod -R 775 "$UPLOAD_FOLDER"
+            chmod 777 "$UPLOAD_FOLDER"
+            chown -R root:www-data "$UPLOAD_FOLDER"
+        fi
 
         php bin/console doctrine:database:drop --force
 
@@ -136,7 +150,7 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn upgrade
-        yarn run encore production
+        yarn build
 
         php bin/console doctrine:schema:update --force
         echo -e '\033[42;30m ------------------------------------------ \033[0m'
@@ -173,9 +187,9 @@ select CHOICE in "${LIST[@]}" ; do
         echo '------------------------------------------'
         echo 'Install project in production environement'
         echo '------------------------------------------'
-        echo 'See : https://symfony.com/doc/current/deployment.html'
-
-        php bin/symfony_requirements
+        echo '\n'
+        echo -e '\033[0;34mSee :\033[0m https://symfony.com/doc/current/deployment.html'
+        echo '\n'
 
         if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
             echo -n 'Edit .env? (y/N)'
@@ -197,11 +211,14 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn install
-        yarn run encore production
+        yarn build
 
-        chmod -R 775 public/uploads/
-        chmod 777 public/uploads/
-        chown -R root:www-data public/uploads/
+        UPLOAD_FOLDER='public/uploads/'
+        if [ -d "$UPLOAD_FOLDER" ]; then
+            chmod -R 775 "$UPLOAD_FOLDER"
+            chmod 777 "$UPLOAD_FOLDER"
+            chown -R root:www-data "$UPLOAD_FOLDER"
+        fi
 
         php bin/console cache:clear --env=prod --no-debug
 
