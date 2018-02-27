@@ -63,7 +63,8 @@ LIST=('Install project'
       'Clean cache'
       'Update project (Composer + yarn + DB)'
       'Reset project'
-      'Install project in production environement')
+      'Install project in production environement'
+      'Update tools.sh')
 
 # Commands available
 select CHOICE in "${LIST[@]}" ; do
@@ -229,6 +230,19 @@ select CHOICE in "${LIST[@]}" ; do
         echo -e '\033[42;30m ----------------------------------------------- \033[0m'
         echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
         echo -e '\033[42;30m ----------------------------------------------- \033[0m'
+        break
+        ;;
+
+        6)
+        echo ''
+        echo '---------------'
+        echo 'Update tools.sh'
+        echo '---------------'
+		curl https://gitlab.com/breithbarbot/tools.sh/raw/master/tools.sh > tools.sh
+        echo -e '\033[42;30m -------------------- \033[0m'
+        echo -e '\033[42;30m [OK] Update tools.sh \033[0m'
+        echo -e '\033[42;30m -------------------- \033[0m'
+		exit
         break
         ;;
     esac
