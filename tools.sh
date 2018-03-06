@@ -96,7 +96,6 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn install
-        yarn build
 
         UPLOAD_FOLDER='public/uploads/'
         if [ -d "$UPLOAD_FOLDER" ]; then
@@ -161,7 +160,7 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn upgrade
-        yarn build
+
 
         php bin/console doctrine:schema:update --force
         echo -e '\033[42;30m ------------------------------------------ \033[0m'
@@ -227,7 +226,6 @@ select CHOICE in "${LIST[@]}" ; do
         php bin/console assets:install --symlink
 
         yarn install --production
-        yarn build
 
         UPLOAD_FOLDER='public/uploads/'
         if [ -d "$UPLOAD_FOLDER" ]; then
