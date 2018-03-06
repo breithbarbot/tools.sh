@@ -113,6 +113,11 @@ select CHOICE in "${LIST[@]}" ; do
 
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
+        CACHE_PROD_FOLDER='var/cache/prod/'
+        if [ -d "$CACHE_PROD_FOLDER" ]; then
+            chmod 775 "$CACHE_PROD_FOLDER"
+        fi
+        php bin/console cache:warmup
 
         cp ./.sources/config.ini.dist ./.sources/config.ini
         echo -e '\033[42;30m -------------------- \033[0m'
@@ -134,6 +139,11 @@ select CHOICE in "${LIST[@]}" ; do
 
         php bin/console cache:clear
         php bin/console cache:clear --env=prod --no-debug
+        CACHE_PROD_FOLDER='var/cache/prod/'
+        if [ -d "$CACHE_PROD_FOLDER" ]; then
+            chmod 775 "$CACHE_PROD_FOLDER"
+        fi
+        php bin/console cache:warmup
         echo -e '\033[42;30m ---------------- \033[0m'
         echo -e '\033[42;30m [OK] Clean cache \033[0m'
         echo -e '\033[42;30m ---------------- \033[0m'
@@ -176,6 +186,11 @@ select CHOICE in "${LIST[@]}" ; do
         if echo "$answer" | grep -iq '^y' ;then
             php bin/console cache:clear
             php bin/console cache:clear --env=prod --no-debug
+            CACHE_PROD_FOLDER='var/cache/prod/'
+            if [ -d "$CACHE_PROD_FOLDER" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER"
+            fi
+            php bin/console cache:warmup
         fi
         echo -e '\033[42;30m ------------------ \033[0m'
         echo -e '\033[42;30m [OK] Reset project \033[0m'
@@ -222,6 +237,10 @@ select CHOICE in "${LIST[@]}" ; do
         fi
 
         php bin/console cache:clear --env=prod --no-debug
+        CACHE_PROD_FOLDER='var/cache/prod/'
+        if [ -d "$CACHE_PROD_FOLDER" ]; then
+            chmod 775 "$CACHE_PROD_FOLDER"
+        fi
         php bin/console cache:warmup
 
         php bin/console doctrine:database:create
