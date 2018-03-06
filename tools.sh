@@ -211,7 +211,7 @@ select CHOICE in "${LIST[@]}" ; do
         composer update --no-dev --optimize-autoloader
         php bin/console assets:install --symlink
 
-        yarn install
+        yarn install --production
         yarn build
 
         UPLOAD_FOLDER='public/uploads/'
@@ -222,11 +222,10 @@ select CHOICE in "${LIST[@]}" ; do
         fi
 
         php bin/console cache:clear --env=prod --no-debug
+        php bin/console cache:warmup
 
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
-
-        php bin/console assetic:dump --env=prod --no-debug
         echo -e '\033[42;30m ----------------------------------------------- \033[0m'
         echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
         echo -e '\033[42;30m ----------------------------------------------- \033[0m'
