@@ -161,7 +161,6 @@ select CHOICE in "${LIST[@]}" ; do
 
         yarn upgrade
 
-
         php bin/console doctrine:schema:update --force
         echo -e '\033[42;30m ------------------------------------------ \033[0m'
         echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) \033[0m'
