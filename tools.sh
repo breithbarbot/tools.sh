@@ -41,7 +41,7 @@ echo -e '\033[0;36m**\033[0m      \033[1;37mTools.sh for Symfony Flex\033[0m    
 echo -e '\033[0;36m**                                     **\033[0m'
 echo -e '\033[0;36m*****************************************\033[0m'
 echo -e '\033[0;36m*****************************************\033[0m'
-echo -e '\n'
+echo -e '\r'
 
 
 # tools.sh should not be run as root to prevent Symfony's cache fails with wrong permissions on /var folders
@@ -54,6 +54,90 @@ if [[ "$OSTYPE" == linux* ]]; then
     fi
 fi
 
+
+# #########
+# Functions
+# #########
+
+# Request if you want edit .env file
+editEnv() {
+    cp ./.env.dist ./.env
+    if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
+
+        echo -n 'Edit .env? (y/N)'
+        read answer
+        if echo "$answer" | grep -iq '^y' ;then
+            # cp ./.env.dist ./.env
+            if [ -x "$(command -v editor)" ]; then
+                editor ./.env
+            else
+                nano ./.env
+            fi
+        fi
+
+    else
+
+        echo 'Edit your .env file if necessary'
+
+    fi
+}
+
+# Install and update packages from composer
+runComposer() {
+    if [ false ] && [ "$1" = 'prod' ]; then
+
+        rm -fr ./vendor/*
+        composer install --no-dev --optimize-autoloader
+        composer update --no-dev --optimize-autoloader
+        php bin/console assets:install --symlink
+
+    else
+
+        rm -fr ./vendor/*
+        composer install
+        composer update
+        php bin/console assets:install --symlink
+
+    fi
+}
+
+# Set permission on upload folder
+permissionUploadFolder() {
+    UPLOAD_FOLDER='public/uploads/'
+    if [ -d "$UPLOAD_FOLDER" ]; then
+        chmod -R 775 "$UPLOAD_FOLDER"
+        chmod 777 "$UPLOAD_FOLDER"
+        chown -R root:www-data "$UPLOAD_FOLDER"
+    fi
+}
+
+# Clean cache and set permission on cache folder
+cleanCacheFolder() {
+    if [ false ] && [ "$1" = 'prod' ]; then
+
+        php bin/console cache:clear --env=prod --no-debug
+
+    else
+
+        php bin/console cache:clear
+
+    fi
+
+    CACHE_PROD_FOLDER='var/cache/'
+    if [ -d "$CACHE_PROD_FOLDER" ]; then
+        chmod 775 "$CACHE_PROD_FOLDER"
+    fi
+    CACHE_PROD_FOLDER2='var/log/'
+    if [ -d "$CACHE_PROD_FOLDER2" ]; then
+        chmod 775 "$CACHE_PROD_FOLDER2"
+    fi
+    php bin/console cache:warmup
+}
+
+
+# ########
+# Selector
+# ########
 
 # Prompt
 PS3='Selected : '
@@ -78,49 +162,23 @@ select CHOICE in "${LIST[@]}" ; do
         read answer
         if echo "$answer" | grep -iq '^y' ;then
 
-            echo '\n'
+            echo '\r'
             echo -e '\033[0;34mSee :\033[0m https://symfony.com/doc/current/deployment.html'
-            echo '\n'
+            echo '\r'
 
-            if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
-                echo -n 'Edit .env? (y/N)'
-                read answer
-                if echo "$answer" | grep -iq '^y' ;then
-                    # cp ./.env.dist ./.env
-                    if [ -x "$(command -v editor)" ]; then
-                        editor ./.env
-                    else
-                        nano ./.env
-                    fi
-                fi
-            else
-                echo 'Edit your .env file if necessary'
-            fi
+            # Request if you want edit .env file
+            editEnv
 
-            rm -fr ./vendor/*
-            composer install --no-dev --optimize-autoloader
-            composer update --no-dev --optimize-autoloader
-            php bin/console assets:install --symlink
+            # Install and update packages from composer
+            runComposer 'prod'
 
             yarn install --production
 
-            UPLOAD_FOLDER='public/uploads/'
-            if [ -d "$UPLOAD_FOLDER" ]; then
-                chmod -R 775 "$UPLOAD_FOLDER"
-                chmod 777 "$UPLOAD_FOLDER"
-                chown -R root:www-data "$UPLOAD_FOLDER"
-            fi
+            # Set permission on upload folder
+            permissionUploadFolder
 
-            php bin/console cache:clear --env=prod --no-debug
-            CACHE_PROD_FOLDER='var/cache/'
-            if [ -d "$CACHE_PROD_FOLDER" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER"
-            fi
-            CACHE_PROD_FOLDER2='var/log/'
-            if [ -d "$CACHE_PROD_FOLDER2" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER2"
-            fi
-            php bin/console cache:warmup
+            # Clean cache and set permission on cache folder
+            cleanCacheFolder 'prod'
 
             php bin/console doctrine:database:create
             php bin/console doctrine:schema:update --force
@@ -131,50 +189,24 @@ select CHOICE in "${LIST[@]}" ; do
 
         else
 
-            cp ./.env.dist ./.env
-            if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
-                echo -n 'Edit .env? (y/N)'
-                read answer
-                if echo "$answer" | grep -iq '^y' ;then
-                    if [ -x "$(command -v editor)" ]; then
-                        editor ./.env
-                    else
-                        nano ./.env
-                    fi
-                fi
-            else
-                echo 'Edit your .env file if necessary'
-            fi
+            # Request if you want edit .env file
+            editEnv
 
-            rm -fr ./vendor/*
-            composer install
-            composer update
-            php bin/console assets:install --symlink
+            # Install and update packages from composer
+            runComposer
 
             yarn install
 
-            UPLOAD_FOLDER='public/uploads/'
-            if [ -d "$UPLOAD_FOLDER" ]; then
-                chmod -R 775 "$UPLOAD_FOLDER"
-                chmod 777 "$UPLOAD_FOLDER"
-                chown -R root:www-data "$UPLOAD_FOLDER"
-            fi
+            # Set permission on upload folder
+            permissionUploadFolder
+
+            # Clean cache and set permission on cache folder
+            cleanCacheFolder
 
             php bin/console doctrine:database:drop --force
             php bin/console doctrine:database:create
             php bin/console doctrine:schema:update --force
             php bin/console doctrine:fixtures:load
-
-            php bin/console cache:clear
-            CACHE_PROD_FOLDER='var/cache/prod/'
-            if [ -d "$CACHE_PROD_FOLDER" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER"
-            fi
-            CACHE_PROD_FOLDER2='var/log/'
-            if [ -d "$CACHE_PROD_FOLDER2" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER2"
-            fi
-            php bin/console cache:warmup
 
             cp ./.sources/config.ini.dist ./.sources/config.ini
 
@@ -183,7 +215,6 @@ select CHOICE in "${LIST[@]}" ; do
             echo -e '\033[42;30m ------------------------------------------------ \033[0m'
 
         fi
-
         break
         ;;
 
@@ -197,10 +228,8 @@ select CHOICE in "${LIST[@]}" ; do
         read answer
         if echo "$answer" | grep -iq '^y' ;then
 
-            composer install --no-dev --optimize-autoloader
-            composer update --no-dev --optimize-autoloader
-            rm -fr public/bundles/*
-            php bin/console assets:install --symlink
+            # Install and update packages from composer
+            runComposer 'prod'
 
             yarn upgrade --production
 
@@ -212,10 +241,8 @@ select CHOICE in "${LIST[@]}" ; do
 
         else
 
-            composer install
-            composer update
-            rm -fr public/bundles/*
-            php bin/console assets:install --symlink
+            # Install and update packages from composer
+            runComposer
 
             yarn upgrade
 
@@ -226,7 +253,6 @@ select CHOICE in "${LIST[@]}" ; do
             echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
 
         fi
-
         break
         ;;
 
@@ -235,8 +261,8 @@ select CHOICE in "${LIST[@]}" ; do
         echo '-------------'
         echo 'Reset project'
         echo '-------------'
-        php bin/console doctrine:database:drop --force
 
+        php bin/console doctrine:database:drop --force
         php bin/console doctrine:database:create
         php bin/console doctrine:schema:update --force
         php bin/console doctrine:fixtures:load
@@ -244,17 +270,21 @@ select CHOICE in "${LIST[@]}" ; do
         echo -n 'Clean cache? (y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
-            php bin/console cache:clear
-            php bin/console cache:clear --env=prod --no-debug
-            CACHE_PROD_FOLDER='var/cache/prod/'
-            if [ -d "$CACHE_PROD_FOLDER" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER"
+
+            echo -n 'In a production environment? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+
+                # Clean cache and set permission on cache folder
+                cleanCacheFolder 'prod'
+
+            else
+
+                # Clean cache and set permission on cache folder
+                cleanCacheFolder
+
             fi
-            CACHE_PROD_FOLDER2='var/log/'
-            if [ -d "$CACHE_PROD_FOLDER2" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER2"
-            fi
-            php bin/console cache:warmup
+
         fi
         echo -e '\033[42;30m ------------------ \033[0m'
         echo -e '\033[42;30m [OK] Reset project \033[0m'
@@ -278,16 +308,8 @@ select CHOICE in "${LIST[@]}" ; do
                 rm -fr var/*
             fi
 
-            php bin/console cache:clear --env=prod --no-debug
-            CACHE_PROD_FOLDER='var/cache/prod/'
-            if [ -d "$CACHE_PROD_FOLDER" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER"
-            fi
-            CACHE_PROD_FOLDER2='var/log/'
-            if [ -d "$CACHE_PROD_FOLDER2" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER2"
-            fi
-            php bin/console cache:warmup
+            # Clean cache and set permission on cache folder
+            cleanCacheFolder 'prod'
 
             echo -e '\033[42;30m ------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Clean cache in production environement \033[0m'
@@ -301,23 +323,14 @@ select CHOICE in "${LIST[@]}" ; do
                 rm -fr var/*
             fi
 
-            php bin/console cache:clear
-            CACHE_PROD_FOLDER='var/cache/prod/'
-            if [ -d "$CACHE_PROD_FOLDER" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER"
-            fi
-            CACHE_PROD_FOLDER2='var/log/'
-            if [ -d "$CACHE_PROD_FOLDER2" ]; then
-                chmod 775 "$CACHE_PROD_FOLDER2"
-            fi
-            php bin/console cache:warmup
+            # Clean cache and set permission on cache folder
+            cleanCacheFolder
 
             echo -e '\033[42;30m ------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Clean cache in production environement \033[0m'
             echo -e '\033[42;30m ------------------------------------------- \033[0m'
 
         fi
-
         break
         ;;
 
