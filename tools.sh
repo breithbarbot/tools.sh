@@ -60,10 +60,9 @@ PS3='Selected : '
 
 # List of available commands :
 LIST=('Install project'
-      'Clean cache'
       'Update project (Composer + yarn + DB)'
       'Reset project'
-      'Install project in production environement'
+      'Clean cache'
       'Update tools.sh')
 
 # Commands available
@@ -74,102 +73,164 @@ select CHOICE in "${LIST[@]}" ; do
         echo '---------------'
         echo 'Install project'
         echo '---------------'
-        cp ./.env.dist ./.env
 
-        if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
-            echo -n 'Edit .env? (y/N)'
-            read answer
-            if echo "$answer" | grep -iq '^y' ;then
-                if [ -x "$(command -v editor)" ]; then
-                    editor ./.env
-                else
-                    nano ./.env
+        echo -n 'In a production environment? (y/N)'
+        read answer
+        if echo "$answer" | grep -iq '^y' ;then
+
+            echo '\n'
+            echo -e '\033[0;34mSee :\033[0m https://symfony.com/doc/current/deployment.html'
+            echo '\n'
+
+            if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
+                echo -n 'Edit .env? (y/N)'
+                read answer
+                if echo "$answer" | grep -iq '^y' ;then
+                    # cp ./.env.dist ./.env
+                    if [ -x "$(command -v editor)" ]; then
+                        editor ./.env
+                    else
+                        nano ./.env
+                    fi
                 fi
+            else
+                echo 'Edit your .env file if necessary'
             fi
+
+            rm -fr ./vendor/*
+            composer install --no-dev --optimize-autoloader
+            composer update --no-dev --optimize-autoloader
+            php bin/console assets:install --symlink
+
+            yarn install --production
+
+            UPLOAD_FOLDER='public/uploads/'
+            if [ -d "$UPLOAD_FOLDER" ]; then
+                chmod -R 775 "$UPLOAD_FOLDER"
+                chmod 777 "$UPLOAD_FOLDER"
+                chown -R root:www-data "$UPLOAD_FOLDER"
+            fi
+
+            php bin/console cache:clear --env=prod --no-debug
+            CACHE_PROD_FOLDER='var/cache/'
+            if [ -d "$CACHE_PROD_FOLDER" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER"
+            fi
+            CACHE_PROD_FOLDER2='var/log/'
+            if [ -d "$CACHE_PROD_FOLDER2" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER2"
+            fi
+            php bin/console cache:warmup
+
+            php bin/console doctrine:database:create
+            php bin/console doctrine:schema:update --force
+
+            echo -e '\033[42;30m ----------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
+            echo -e '\033[42;30m ----------------------------------------------- \033[0m'
+
         else
-            echo 'Edit your .env file if necessary'
+
+            cp ./.env.dist ./.env
+            if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
+                echo -n 'Edit .env? (y/N)'
+                read answer
+                if echo "$answer" | grep -iq '^y' ;then
+                    if [ -x "$(command -v editor)" ]; then
+                        editor ./.env
+                    else
+                        nano ./.env
+                    fi
+                fi
+            else
+                echo 'Edit your .env file if necessary'
+            fi
+
+            rm -fr ./vendor/*
+            composer install
+            composer update
+            php bin/console assets:install --symlink
+
+            yarn install
+
+            UPLOAD_FOLDER='public/uploads/'
+            if [ -d "$UPLOAD_FOLDER" ]; then
+                chmod -R 775 "$UPLOAD_FOLDER"
+                chmod 777 "$UPLOAD_FOLDER"
+                chown -R root:www-data "$UPLOAD_FOLDER"
+            fi
+
+            php bin/console doctrine:database:drop --force
+            php bin/console doctrine:database:create
+            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:fixtures:load
+
+            php bin/console cache:clear
+            CACHE_PROD_FOLDER='var/cache/prod/'
+            if [ -d "$CACHE_PROD_FOLDER" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER"
+            fi
+            CACHE_PROD_FOLDER2='var/log/'
+            if [ -d "$CACHE_PROD_FOLDER2" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER2"
+            fi
+            php bin/console cache:warmup
+
+            cp ./.sources/config.ini.dist ./.sources/config.ini
+
+            echo -e '\033[42;30m ------------------------------------------------ \033[0m'
+            echo -e '\033[42;30m [OK] Install project in development environement \033[0m'
+            echo -e '\033[42;30m ------------------------------------------------ \033[0m'
+
         fi
 
-        rm -fr ./vendor/*
-        composer install
-        composer update
-        php bin/console assets:install --symlink
-
-        yarn install
-
-        UPLOAD_FOLDER='public/uploads/'
-        if [ -d "$UPLOAD_FOLDER" ]; then
-            chmod -R 775 "$UPLOAD_FOLDER"
-            chmod 777 "$UPLOAD_FOLDER"
-            chown -R root:www-data "$UPLOAD_FOLDER"
-        fi
-
-        php bin/console doctrine:database:drop --force
-
-        php bin/console doctrine:database:create
-        php bin/console doctrine:schema:update --force
-        php bin/console doctrine:fixtures:load
-
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
-        CACHE_PROD_FOLDER='var/cache/prod/'
-        if [ -d "$CACHE_PROD_FOLDER" ]; then
-            chmod 775 "$CACHE_PROD_FOLDER"
-        fi
-        php bin/console cache:warmup
-
-
-        cp ./.sources/config.ini.dist ./.sources/config.ini
-        echo -e '\033[42;30m -------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Install project \033[0m'
-        echo -e '\033[42;30m -------------------- \033[0m'
         break
         ;;
 
         2)
         echo ''
-        echo '-----------'
-        echo 'Clean cache'
-        echo '-----------'
-        echo -n 'Clean the var folder? (y/N)'
+        echo '-------------------------------------'
+        echo 'Update project (Composer + yarn + DB)'
+        echo '-------------------------------------'
+
+        echo -n 'In a production environment? (y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
-            rm -fr var/*
+
+            composer install --no-dev --optimize-autoloader
+            composer update --no-dev --optimize-autoloader
+            rm -fr public/bundles/*
+            php bin/console assets:install --symlink
+
+            yarn upgrade --production
+
+            php bin/console doctrine:schema:update --force
+
+            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
+            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
+
+        else
+
+            composer install
+            composer update
+            rm -fr public/bundles/*
+            php bin/console assets:install --symlink
+
+            yarn upgrade
+
+            php bin/console doctrine:schema:update --force
+
+            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
+            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
+
         fi
 
-        php bin/console cache:clear
-        php bin/console cache:clear --env=prod --no-debug
-        CACHE_PROD_FOLDER='var/cache/prod/'
-        if [ -d "$CACHE_PROD_FOLDER" ]; then
-            chmod 775 "$CACHE_PROD_FOLDER"
-        fi
-        php bin/console cache:warmup
-        echo -e '\033[42;30m ---------------- \033[0m'
-        echo -e '\033[42;30m [OK] Clean cache \033[0m'
-        echo -e '\033[42;30m ---------------- \033[0m'
         break
         ;;
 
         3)
-        echo ''
-        echo '-------------------------------------'
-        echo 'Update project (Composer + yarn + DB)'
-        echo '-------------------------------------'
-        rm -fr public/bundles/*
-
-        composer update
-        php bin/console assets:install --symlink
-
-        yarn upgrade
-
-        php bin/console doctrine:schema:update --force
-        echo -e '\033[42;30m ------------------------------------------ \033[0m'
-        echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) \033[0m'
-        echo -e '\033[42;30m ------------------------------------------ \033[0m'
-        break
-        ;;
-
-        4)
         echo ''
         echo '-------------'
         echo 'Reset project'
@@ -189,6 +250,10 @@ select CHOICE in "${LIST[@]}" ; do
             if [ -d "$CACHE_PROD_FOLDER" ]; then
                 chmod 775 "$CACHE_PROD_FOLDER"
             fi
+            CACHE_PROD_FOLDER2='var/log/'
+            if [ -d "$CACHE_PROD_FOLDER2" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER2"
+            fi
             php bin/console cache:warmup
         fi
         echo -e '\033[42;30m ------------------ \033[0m'
@@ -197,59 +262,66 @@ select CHOICE in "${LIST[@]}" ; do
         break
         ;;
 
-        5)
+        4)
         echo ''
-        echo '------------------------------------------'
-        echo 'Install project in production environement'
-        echo '------------------------------------------'
-        echo '\n'
-        echo -e '\033[0;34mSee :\033[0m https://symfony.com/doc/current/deployment.html'
-        echo '\n'
+        echo '-----------'
+        echo 'Clean cache'
+        echo '-----------'
 
-        if [ -x "$(command -v editor)" ] || [ -x "$(command -v nano)" ]; then
-            echo -n 'Edit .env? (y/N)'
+        echo -n 'In a production environment? (y/N)'
+        read answer
+        if echo "$answer" | grep -iq '^y' ;then
+
+            echo -n 'Clean the var folder? (y/N)'
             read answer
             if echo "$answer" | grep -iq '^y' ;then
-                if [ -x "$(command -v editor)" ]; then
-                    editor ./.env
-                else
-                    nano ./.env
-                fi
+                rm -fr var/*
             fi
+
+            php bin/console cache:clear --env=prod --no-debug
+            CACHE_PROD_FOLDER='var/cache/prod/'
+            if [ -d "$CACHE_PROD_FOLDER" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER"
+            fi
+            CACHE_PROD_FOLDER2='var/log/'
+            if [ -d "$CACHE_PROD_FOLDER2" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER2"
+            fi
+            php bin/console cache:warmup
+
+            echo -e '\033[42;30m ------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Clean cache in production environement \033[0m'
+            echo -e '\033[42;30m ------------------------------------------- \033[0m'
+
         else
-            echo 'Edit your .env file if necessary'
+
+            echo -n 'Clean the var folder? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+                rm -fr var/*
+            fi
+
+            php bin/console cache:clear
+            CACHE_PROD_FOLDER='var/cache/prod/'
+            if [ -d "$CACHE_PROD_FOLDER" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER"
+            fi
+            CACHE_PROD_FOLDER2='var/log/'
+            if [ -d "$CACHE_PROD_FOLDER2" ]; then
+                chmod 775 "$CACHE_PROD_FOLDER2"
+            fi
+            php bin/console cache:warmup
+
+            echo -e '\033[42;30m ------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Clean cache in production environement \033[0m'
+            echo -e '\033[42;30m ------------------------------------------- \033[0m'
+
         fi
 
-        rm -fr ./vendor/*
-        composer install --no-dev --optimize-autoloader
-        composer update --no-dev --optimize-autoloader
-        php bin/console assets:install --symlink
-
-        yarn install --production
-
-        UPLOAD_FOLDER='public/uploads/'
-        if [ -d "$UPLOAD_FOLDER" ]; then
-            chmod -R 775 "$UPLOAD_FOLDER"
-            chmod 777 "$UPLOAD_FOLDER"
-            chown -R root:www-data "$UPLOAD_FOLDER"
-        fi
-
-        php bin/console cache:clear --env=prod --no-debug
-        CACHE_PROD_FOLDER='var/cache/prod/'
-        if [ -d "$CACHE_PROD_FOLDER" ]; then
-            chmod 775 "$CACHE_PROD_FOLDER"
-        fi
-        php bin/console cache:warmup
-
-        php bin/console doctrine:database:create
-        php bin/console doctrine:schema:update --force
-        echo -e '\033[42;30m ----------------------------------------------- \033[0m'
-        echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
-        echo -e '\033[42;30m ----------------------------------------------- \033[0m'
         break
         ;;
 
-        6)
+        5)
         echo ''
         echo '---------------'
         echo 'Update tools.sh'
