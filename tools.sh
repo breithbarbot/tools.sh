@@ -262,33 +262,45 @@ select CHOICE in "${LIST[@]}" ; do
         echo 'Reset project'
         echo '-------------'
 
-        php bin/console doctrine:database:drop --force
-        php bin/console doctrine:database:create
-        php bin/console doctrine:schema:update --force
-        php bin/console doctrine:fixtures:load
-
-        echo -n 'Clean cache? (y/N)'
+        echo -en '\033[31mYour database will be emptied! \033[34mAre you sure? \033[0m(y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
+            php bin/console doctrine:database:drop --force
+            php bin/console doctrine:database:create
+            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:fixtures:load
 
-            echo -n 'In a production environment? (y/N)'
+            echo -n 'Clean cache? (y/N)'
             read answer
             if echo "$answer" | grep -iq '^y' ;then
 
-                # Clean cache and set permission on cache folder
-                cleanCacheFolder 'prod'
+                echo -n 'In a production environment? (y/N)'
+                read answer
+                if echo "$answer" | grep -iq '^y' ;then
 
-            else
+                    # Clean cache and set permission on cache folder
+                    cleanCacheFolder 'prod'
 
-                # Clean cache and set permission on cache folder
-                cleanCacheFolder
+                else
+
+                    # Clean cache and set permission on cache folder
+                    cleanCacheFolder
+
+                fi
 
             fi
 
+            echo -e '\033[42;30m ------------------ \033[0m'
+            echo -e '\033[42;30m [OK] Reset project \033[0m'
+            echo -e '\033[42;30m ------------------ \033[0m'
+
+        else
+
+            echo -e '\033[41;30m -------------------------- \033[0m'
+            echo -e '\033[41;30m [KO] Reset project aborted \033[0m'
+            echo -e '\033[41;30m -------------------------- \033[0m'
+
         fi
-        echo -e '\033[42;30m ------------------ \033[0m'
-        echo -e '\033[42;30m [OK] Reset project \033[0m'
-        echo -e '\033[42;30m ------------------ \033[0m'
         break
         ;;
 
@@ -339,7 +351,9 @@ select CHOICE in "${LIST[@]}" ; do
         echo '---------------'
         echo 'Update tools.sh'
         echo '---------------'
+
 		curl https://gitlab.com/breithbarbot/tools.sh/raw/master/tools.sh > tools.sh
+
         echo -e '\033[42;30m -------------------- \033[0m'
         echo -e '\033[42;30m [OK] Update tools.sh \033[0m'
         echo -e '\033[42;30m -------------------- \033[0m'
