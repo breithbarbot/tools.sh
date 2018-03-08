@@ -3,7 +3,7 @@
 ##########################################################
 # Copyright (c) 2018 Breith Barbot <b.breith@gmail.com>. #
 # Source : https://gitlab.com/breithbarbot/tools.sh      #
-# For Symfony Flex                                       #
+# Tools.sh for Symfony Flex                              #
 ##########################################################
 
 
@@ -362,3 +362,8 @@ select CHOICE in "${LIST[@]}" ; do
         ;;
     esac
 done
+
+#############################################################
+# Base for colouring                                        #
+# https://misc.flogisoft.com/bash/tip_colors_and_formatting #
+#############################################################
