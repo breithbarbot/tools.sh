@@ -138,13 +138,9 @@ cleanCacheFolder() {
 
     fi
 
-    CACHE_PROD_FOLDER='var/cache/'
+    CACHE_PROD_FOLDER='var/'
     if [ -d "$CACHE_PROD_FOLDER" ]; then
-        chmod 775 "$CACHE_PROD_FOLDER"
-    fi
-    CACHE_PROD_FOLDER2='var/log/'
-    if [ -d "$CACHE_PROD_FOLDER2" ]; then
-        chmod 775 "$CACHE_PROD_FOLDER2"
+        chmod 775 -R "$CACHE_PROD_FOLDER"
     fi
     php bin/console cache:warmup
 }
