@@ -83,22 +83,39 @@ editEnv() {
 }
 
 # Install and update packages from composer
-runComposer() {
+installComposer() {
+    rm -fr ./vendor/*
+
     if [ false ] && [ "$1" = 'prod' ]; then
 
-        rm -fr ./vendor/*
         composer install --no-dev --optimize-autoloader
         composer update --no-dev --optimize-autoloader
-        php bin/console assets:install --symlink
 
     else
 
-        rm -fr ./vendor/*
         composer install
         composer update
-        php bin/console assets:install --symlink
 
     fi
+
+    php bin/console assets:install --symlink
+}
+
+# Update packages from composer
+updateComposer() {
+    if [ false ] && [ "$1" = 'prod' ]; then
+
+        composer install --no-dev --optimize-autoloader
+        composer update --no-dev --optimize-autoloader
+
+    else
+
+        composer install
+        composer update
+
+    fi
+
+    php bin/console assets:install --symlink
 }
 
 # Set permission on upload folder
@@ -170,7 +187,7 @@ select CHOICE in "${LIST[@]}" ; do
             editEnv
 
             # Install and update packages from composer
-            runComposer 'prod'
+            installComposer 'prod'
 
             yarn install --production
 
@@ -193,7 +210,7 @@ select CHOICE in "${LIST[@]}" ; do
             editEnv
 
             # Install and update packages from composer
-            runComposer
+            installComposer
 
             yarn install
 
@@ -228,8 +245,8 @@ select CHOICE in "${LIST[@]}" ; do
         read answer
         if echo "$answer" | grep -iq '^y' ;then
 
-            # Install and update packages from composer
-            runComposer 'prod'
+            # Update packages from composer
+            updateComposer 'prod'
 
             yarn upgrade --production
 
@@ -241,8 +258,8 @@ select CHOICE in "${LIST[@]}" ; do
 
         else
 
-            # Install and update packages from composer
-            runComposer
+            # Update packages from composer
+            updateComposer
 
             yarn upgrade
 
