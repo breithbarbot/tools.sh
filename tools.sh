@@ -105,12 +105,10 @@ installComposer() {
 updateComposer() {
     if [ false ] && [ "$1" = 'prod' ]; then
 
-        composer install --no-dev --optimize-autoloader
         composer update --no-dev --optimize-autoloader
 
     else
 
-        composer install
         composer update
 
     fi
