@@ -187,7 +187,7 @@ select CHOICE in "${LIST[@]}" ; do
             # Install and update packages from composer
             installComposer 'prod'
 
-            yarn install --production
+            yarn install --frozen-lockfile --no-cache --production
 
             # Set permission on upload folder
             permissionUploadFolder
@@ -246,7 +246,7 @@ select CHOICE in "${LIST[@]}" ; do
             # Update packages from composer
             updateComposer 'prod'
 
-            yarn upgrade --production
+            yarn upgrade --frozen-lockfile --no-cache --production
 
             php bin/console doctrine:schema:update --force
 
