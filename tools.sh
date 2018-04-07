@@ -192,7 +192,7 @@ select CHOICE in "${LIST[@]}" ; do
             cleanCacheFolder 'prod'
 
             php bin/console doctrine:database:create
-            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:migrations:migrate
 
             echo -e '\033[42;30m ----------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
@@ -216,10 +216,8 @@ select CHOICE in "${LIST[@]}" ; do
 
             php bin/console doctrine:database:drop --force
             php bin/console doctrine:database:create
-            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:migrations:migrate
             php bin/console doctrine:fixtures:load
-
-            cp ./.sources/config.ini.dist ./.sources/config.ini
 
             echo -e '\033[42;30m ------------------------------------------------ \033[0m'
             echo -e '\033[42;30m [OK] Install project in development environement \033[0m'
@@ -244,7 +242,7 @@ select CHOICE in "${LIST[@]}" ; do
 
             yarn upgrade --frozen-lockfile --no-cache --production
 
-            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:migrations:migrate
 
             echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
@@ -257,7 +255,7 @@ select CHOICE in "${LIST[@]}" ; do
 
             yarn upgrade
 
-            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:migrations:migrate
 
             echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
@@ -278,7 +276,7 @@ select CHOICE in "${LIST[@]}" ; do
         if echo "$answer" | grep -iq '^y' ;then
             php bin/console doctrine:database:drop --force
             php bin/console doctrine:database:create
-            php bin/console doctrine:schema:update --force
+            php bin/console doctrine:migrations:migrate
             php bin/console doctrine:fixtures:load
 
             echo -n 'Clean cache? (y/N)'
