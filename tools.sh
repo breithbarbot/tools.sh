@@ -131,18 +131,22 @@ cleanCacheFolder() {
     if [ false ] && [ "$1" = 'prod' ]; then
 
         php bin/console cache:clear --env=prod --no-debug
+        CACHE_PROD_FOLDER='var/'
+        if [ -d "$CACHE_PROD_FOLDER" ]; then
+            chmod 775 -R "$CACHE_PROD_FOLDER"
+        fi
+        php bin/console cache:warmup --env=prod --no-debug
 
     else
 
-        php bin/console cache:clear
+        php bin/console cache:clear --env=dev
+        CACHE_PROD_FOLDER='var/'
+        if [ -d "$CACHE_PROD_FOLDER" ]; then
+            chmod 775 -R "$CACHE_PROD_FOLDER"
+        fi
+        php bin/console cache:warmup --env=dev
 
     fi
-
-    CACHE_PROD_FOLDER='var/'
-    if [ -d "$CACHE_PROD_FOLDER" ]; then
-        chmod 775 -R "$CACHE_PROD_FOLDER"
-    fi
-    php bin/console cache:warmup
 }
 
 
@@ -183,7 +187,9 @@ select CHOICE in "${LIST[@]}" ; do
             # Install and update packages from composer
             installComposer 'prod'
 
-            yarn install --frozen-lockfile --no-cache --production
+            # TODO : '--production' commented for genereate 'build' command in prod...
+            #yarn install --frozen-lockfile --no-cache --production
+            yarn install --frozen-lockfile --no-cache
 
             # Set permission on upload folder
             permissionUploadFolder
@@ -240,7 +246,9 @@ select CHOICE in "${LIST[@]}" ; do
             # Update packages from composer
             updateComposer 'prod'
 
-            yarn upgrade --frozen-lockfile --no-cache --production
+            # TODO : '--production' commented for genereate 'build' command in prod...
+            #yarn upgrade --frozen-lockfile --no-cache --production
+            yarn upgrade --frozen-lockfile --no-cache
 
             php bin/console doctrine:migrations:migrate
 
