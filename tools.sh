@@ -200,6 +200,8 @@ select CHOICE in "${LIST[@]}" ; do
             php bin/console doctrine:database:create
             php bin/console doctrine:migrations:migrate
 
+            yarn build
+
             echo -e '\033[42;30m ----------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
             echo -e '\033[42;30m ----------------------------------------------- \033[0m'
@@ -224,6 +226,8 @@ select CHOICE in "${LIST[@]}" ; do
             php bin/console doctrine:database:create
             php bin/console doctrine:migrations:migrate
             php bin/console doctrine:fixtures:load
+
+            yarn dev
 
             echo -e '\033[42;30m ------------------------------------------------ \033[0m'
             echo -e '\033[42;30m [OK] Install project in development environement \033[0m'
@@ -252,6 +256,8 @@ select CHOICE in "${LIST[@]}" ; do
 
             php bin/console doctrine:migrations:migrate
 
+            yarn build
+
             echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
             echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
@@ -264,6 +270,8 @@ select CHOICE in "${LIST[@]}" ; do
             yarn upgrade
 
             php bin/console doctrine:migrations:migrate
+
+            yarn dev
 
             echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
