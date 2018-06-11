@@ -89,27 +89,10 @@ installComposer() {
     if [ false ] && [ "$1" = 'prod' ]; then
 
         composer install --no-dev --optimize-autoloader
-        composer update --no-dev --optimize-autoloader
 
     else
 
         composer install
-        composer update
-
-    fi
-
-    php bin/console assets:install --symlink
-}
-
-# Update packages from composer
-updateComposer() {
-    if [ false ] && [ "$1" = 'prod' ]; then
-
-        composer update --no-dev --optimize-autoloader
-
-    else
-
-        composer update
 
     fi
 
@@ -188,8 +171,8 @@ select CHOICE in "${LIST[@]}" ; do
             installComposer 'prod'
 
             # TODO : '--production' commented for genereate 'build' command in prod...
-            #yarn install --frozen-lockfile --no-cache --production
-            yarn install --frozen-lockfile --no-cache
+            #yarn install --production
+            yarn install
 
             # Set permission on upload folder
             permissionUploadFolder
@@ -248,11 +231,11 @@ select CHOICE in "${LIST[@]}" ; do
         if echo "$answer" | grep -iq '^y' ;then
 
             # Update packages from composer
-            updateComposer 'prod'
+            installComposer 'prod'
 
             # TODO : '--production' commented for genereate 'build' command in prod...
-            #yarn upgrade --frozen-lockfile --no-cache --production
-            yarn upgrade --frozen-lockfile --no-cache
+            #yarn upgrade --production
+            yarn install
 
             php bin/console doctrine:migrations:migrate
 
@@ -265,9 +248,9 @@ select CHOICE in "${LIST[@]}" ; do
         else
 
             # Update packages from composer
-            updateComposer
+            installComposer
 
-            yarn upgrade
+            yarn install
 
             php bin/console doctrine:migrations:migrate
 
