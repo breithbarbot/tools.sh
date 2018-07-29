@@ -142,7 +142,7 @@ PS3='Selected : '
 
 # List of available commands :
 LIST=('Install project'
-      'Update project (Composer + yarn + DB)'
+      'Update project (Composer + yarn -> from .lock) + DB'
       'Reset project'
       'Clean cache'
       'Update tools.sh')
@@ -164,8 +164,10 @@ select CHOICE in "${LIST[@]}" ; do
             echo -e '\033[0;34mSee :\033[0m https://symfony.com/doc/current/deployment.html'
             echo '\r'
 
-            # Request if you want edit .env file
-            editEnv
+            # Configure your Environment Variables
+            echo '\r'
+            echo -e '\033[0;34m/!\ \033[0m Rememmber to configure your Environment Variables \033[0;34m/!\'
+            echo '\r'
 
             # Install and update packages from composer
             installComposer 'prod'
@@ -180,7 +182,12 @@ select CHOICE in "${LIST[@]}" ; do
             # Clean cache and set permission on cache folder
             cleanCacheFolder 'prod'
 
-            php bin/console doctrine:database:create
+            echo -n 'Creation of a database (deletion if already existing)? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+                php bin/console doctrine:database:drop --force
+                php bin/console doctrine:database:create
+            fi
             php bin/console doctrine:migrations:migrate
 
             yarn build
@@ -205,10 +212,18 @@ select CHOICE in "${LIST[@]}" ; do
             # Clean cache and set permission on cache folder
             cleanCacheFolder
 
-            php bin/console doctrine:database:drop --force
-            php bin/console doctrine:database:create
+            echo -n 'Creation of a database (deletion if already existing)? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+                php bin/console doctrine:database:drop --force
+                php bin/console doctrine:database:create
+            fi
             php bin/console doctrine:migrations:migrate
-            php bin/console doctrine:fixtures:load
+            echo -n 'Run the fixtures? (y/N)'
+            read answer
+            if echo "$answer" | grep -iq '^y' ;then
+                php bin/console doctrine:fixtures:load
+            fi
 
             yarn dev
 
@@ -222,43 +237,45 @@ select CHOICE in "${LIST[@]}" ; do
 
         2)
         echo ''
-        echo '-------------------------------------'
-        echo 'Update project (Composer + yarn + DB)'
-        echo '-------------------------------------'
+        echo '---------------------------------------------------'
+        echo 'Update project (Composer + yarn -> from .lock) + DB'
+        echo '---------------------------------------------------'
 
         echo -n 'In a production environment? (y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
 
-            # Update packages from composer
+            # Update packages from composer.lock
             installComposer 'prod'
 
+            # Update packages from yarn.lock
             # TODO : '--production' commented for genereate 'build' command in prod...
-            #yarn upgrade --production
+            #yarn install --production
             yarn install
 
             php bin/console doctrine:migrations:migrate
 
             yarn build
 
-            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
-            echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
-            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
+            echo -e '\033[42;30m ----------------------------------------------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Update project (Composer + yarn -> from .lock) + DB in production environement \033[0m'
+            echo -e '\033[42;30m ----------------------------------------------------------------------------------- \033[0m'
 
         else
 
-            # Update packages from composer
+            # Update packages from composer.lock
             installComposer
 
+            # Update packages from yarn.lock
             yarn install
 
             php bin/console doctrine:migrations:migrate
 
             yarn dev
 
-            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
-            echo -e '\033[42;30m [OK] Update project (Composer + yarn + DB) in development environement \033[0m'
-            echo -e '\033[42;30m ---------------------------------------------------------------------- \033[0m'
+            echo -e '\033[42;30m ------------------------------------------------------------------------------------ \033[0m'
+            echo -e '\033[42;30m [OK] Update project (Composer + yarn -> from .lock) + DB in development environement \033[0m'
+            echo -e '\033[42;30m ------------------------------------------------------------------------------------ \033[0m'
 
         fi
         break
@@ -346,9 +363,9 @@ select CHOICE in "${LIST[@]}" ; do
             # Clean cache and set permission on cache folder
             cleanCacheFolder
 
-            echo -e '\033[42;30m ------------------------------------------- \033[0m'
-            echo -e '\033[42;30m [OK] Clean cache in production environement \033[0m'
-            echo -e '\033[42;30m ------------------------------------------- \033[0m'
+            echo -e '\033[42;30m -------------------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Clean cache in development environement \033[0m'
+            echo -e '\033[42;30m -------------------------------------------- \033[0m'
 
         fi
         break
