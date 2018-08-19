@@ -99,7 +99,7 @@ installComposer() {
     php bin/console assets:install --symlink
 }
 
-# Set permission on upload folder
+# Set permission on upload folder [unused]
 permissionUploadFolder() {
     UPLOAD_FOLDER='public/uploads/'
     if [ -d "$UPLOAD_FOLDER" ]; then
@@ -143,7 +143,7 @@ PS3='Selected : '
 # List of available commands :
 LIST=('Install project'
       'Update project (Composer + yarn -> from .lock) + DB'
-      'Reset project'
+      'Reset project (only for dev)'
       'Clean cache'
       'Update tools.sh')
 
@@ -172,13 +172,6 @@ select CHOICE in "${LIST[@]}" ; do
             # Install and update packages from composer
             installComposer 'prod'
 
-            # TODO : '--production' commented for genereate 'build' command in prod...
-            #yarn install --production
-            yarn install
-
-            # Set permission on upload folder
-            permissionUploadFolder
-
             # Clean cache and set permission on cache folder
             cleanCacheFolder 'prod'
 
@@ -190,7 +183,9 @@ select CHOICE in "${LIST[@]}" ; do
             fi
             php bin/console doctrine:migrations:migrate
 
+            yarn install
             yarn build
+            yarn install --production
 
             echo -e '\033[42;30m ----------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Install project in production environement \033[0m'
@@ -203,11 +198,6 @@ select CHOICE in "${LIST[@]}" ; do
 
             # Install and update packages from composer
             installComposer
-
-            yarn install
-
-            # Set permission on upload folder
-            permissionUploadFolder
 
             # Clean cache and set permission on cache folder
             cleanCacheFolder
@@ -225,6 +215,7 @@ select CHOICE in "${LIST[@]}" ; do
                 php bin/console doctrine:fixtures:load
             fi
 
+            yarn install
             yarn dev
 
             echo -e '\033[42;30m ------------------------------------------------ \033[0m'
@@ -248,14 +239,12 @@ select CHOICE in "${LIST[@]}" ; do
             # Update packages from composer.lock
             installComposer 'prod'
 
-            # Update packages from yarn.lock
-            # TODO : '--production' commented for genereate 'build' command in prod...
-            #yarn install --production
-            yarn install
-
             php bin/console doctrine:migrations:migrate
 
+            # Update packages from yarn.lock
+            yarn install
             yarn build
+            yarn install --production
 
             echo -e '\033[42;30m ----------------------------------------------------------------------------------- \033[0m'
             echo -e '\033[42;30m [OK] Update project (Composer + yarn -> from .lock) + DB in production environement \033[0m'
@@ -266,11 +255,10 @@ select CHOICE in "${LIST[@]}" ; do
             # Update packages from composer.lock
             installComposer
 
-            # Update packages from yarn.lock
-            yarn install
-
             php bin/console doctrine:migrations:migrate
 
+            # Update packages from yarn.lock
+            yarn install
             yarn dev
 
             echo -e '\033[42;30m ------------------------------------------------------------------------------------ \033[0m'
@@ -283,9 +271,9 @@ select CHOICE in "${LIST[@]}" ; do
 
         3)
         echo ''
-        echo '-------------'
-        echo 'Reset project'
-        echo '-------------'
+        echo '----------------------------'
+        echo 'Reset project (only for dev)'
+        echo '----------------------------'
 
         echo -en '\033[31mYour database will be emptied! \033[34mAre you sure? \033[0m(y/N)'
         read answer
@@ -298,32 +286,19 @@ select CHOICE in "${LIST[@]}" ; do
             echo -n 'Clean cache? (y/N)'
             read answer
             if echo "$answer" | grep -iq '^y' ;then
-
-                echo -n 'In a production environment? (y/N)'
-                read answer
-                if echo "$answer" | grep -iq '^y' ;then
-
-                    # Clean cache and set permission on cache folder
-                    cleanCacheFolder 'prod'
-
-                else
-
-                    # Clean cache and set permission on cache folder
-                    cleanCacheFolder
-
-                fi
-
+                # Clean cache and set permission on cache folder
+                cleanCacheFolder
             fi
 
-            echo -e '\033[42;30m ------------------ \033[0m'
-            echo -e '\033[42;30m [OK] Reset project \033[0m'
-            echo -e '\033[42;30m ------------------ \033[0m'
+            echo -e '\033[42;30m --------------------------------- \033[0m'
+            echo -e '\033[42;30m [OK] Reset project (only for dev) \033[0m'
+            echo -e '\033[42;30m --------------------------------- \033[0m'
 
         else
 
-            echo -e '\033[41;30m -------------------------- \033[0m'
-            echo -e '\033[41;30m [KO] Reset project aborted \033[0m'
-            echo -e '\033[41;30m -------------------------- \033[0m'
+            echo -e '\033[41;30m ----------------------------------------- \033[0m'
+            echo -e '\033[41;30m [KO] Reset project (only for dev) aborted \033[0m'
+            echo -e '\033[41;30m ----------------------------------------- \033[0m'
 
         fi
         break
