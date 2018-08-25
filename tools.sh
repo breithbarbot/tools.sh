@@ -103,9 +103,9 @@ installComposer() {
 permissionUploadFolder() {
     UPLOAD_FOLDER='public/uploads/'
     if [ -d "$UPLOAD_FOLDER" ]; then
-        chmod -R 775 "$UPLOAD_FOLDER"
-        chmod 777 "$UPLOAD_FOLDER"
-        chown -R root:www-data "$UPLOAD_FOLDER"
+        sudo chmod -R 775 "$UPLOAD_FOLDER"
+        sudo chmod 777 "$UPLOAD_FOLDER"
+        sudo chown -R root:www-data "$UPLOAD_FOLDER"
     fi
 }
 
@@ -116,7 +116,7 @@ cleanCacheFolder() {
         php bin/console cache:clear --env=prod --no-debug
         CACHE_PROD_FOLDER='var/'
         if [ -d "$CACHE_PROD_FOLDER" ]; then
-            chmod 775 -R "$CACHE_PROD_FOLDER"
+            sudo chmod 775 -R "$CACHE_PROD_FOLDER"
         fi
         php bin/console cache:warmup --env=prod --no-debug
 
@@ -125,7 +125,7 @@ cleanCacheFolder() {
         php bin/console cache:clear --env=dev
         CACHE_PROD_FOLDER='var/'
         if [ -d "$CACHE_PROD_FOLDER" ]; then
-            chmod 775 -R "$CACHE_PROD_FOLDER"
+            sudo chmod 775 -R "$CACHE_PROD_FOLDER"
         fi
         php bin/console cache:warmup --env=dev
 
