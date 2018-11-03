@@ -178,8 +178,8 @@ select CHOICE in "${LIST[@]}" ; do
             echo -n 'Creation of a database (deletion if already existing)? (y/N)'
             read answer
             if echo "$answer" | grep -iq '^y' ;then
-                php bin/console doctrine:database:drop --force
-                php bin/console doctrine:database:create
+                php bin/console doctrine:database:drop --if-exists --force
+                php bin/console doctrine:database:create --if-not-exists
             fi
             php bin/console doctrine:migrations:migrate
 
@@ -205,8 +205,8 @@ select CHOICE in "${LIST[@]}" ; do
             echo -n 'Creation of a database (deletion if already existing)? (y/N)'
             read answer
             if echo "$answer" | grep -iq '^y' ;then
-                php bin/console doctrine:database:drop --force
-                php bin/console doctrine:database:create
+                php bin/console doctrine:database:drop --if-exists --force
+                php bin/console doctrine:database:create --if-not-exists
             fi
             php bin/console doctrine:migrations:migrate
             echo -n 'Run the fixtures? (y/N)'
@@ -278,8 +278,8 @@ select CHOICE in "${LIST[@]}" ; do
         echo -en '\033[31mYour database will be emptied! \033[34mAre you sure? \033[0m(y/N)'
         read answer
         if echo "$answer" | grep -iq '^y' ;then
-            php bin/console doctrine:database:drop --force
-            php bin/console doctrine:database:create
+            php bin/console doctrine:database:drop --if-exists --force
+            php bin/console doctrine:database:create --if-not-exists
             php bin/console doctrine:migrations:migrate
             php bin/console doctrine:fixtures:load
 
