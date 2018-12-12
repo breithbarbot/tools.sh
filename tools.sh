@@ -105,7 +105,7 @@ permissionUploadFolder() {
     if [ -d "$UPLOAD_FOLDER" ]; then
         sudo chmod -R 775 "$UPLOAD_FOLDER"
         sudo chmod 777 "$UPLOAD_FOLDER"
-        sudo chown -R root:www-data "$UPLOAD_FOLDER"
+        sudo chown -R www-data:www-data "$UPLOAD_FOLDER"
     fi
 }
 
