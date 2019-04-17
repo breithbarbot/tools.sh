@@ -3,7 +3,7 @@
 ##########################################################
 # Copyright (c) 2018 Breith Barbot <b.breith@gmail.com>. #
 # Source : https://gitlab.com/breithbarbot/tools.sh      #
-# Tools.sh for Symfony Flex                              #
+# Tools.sh for Symfony                                   #
 ##########################################################
 
 

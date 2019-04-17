@@ -1,6 +1,6 @@
-# Tools.sh for Symfony Flex
+# Tools.sh for Symfony
 
-> Commands tools for Symfony Flex
+> Commands tools for Symfony
 
 <br>
 
