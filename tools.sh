@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ##########################################################
-# Copyright (c) 2018 Breith Barbot <b.breith@gmail.com>. #
+# Copyright (c) 2020 Breith Barbot <b.breith@gmail.com>. #
 # Source : https://gitlab.com/breithbarbot/tools.sh      #
 # Tools.sh for Symfony                                   #
 ##########################################################
@@ -22,8 +22,8 @@
 #
 # > If you have a message "No file or folder of this type"
 #
-# Install : `apt-get install dos2unix`
-# Run : `dos2unix tools.sh`
+# - Install : `apt-get install dos2unix`
+# - Run : `dos2unix tools.sh`
 #
 #
 # Step 3 - Execute :
