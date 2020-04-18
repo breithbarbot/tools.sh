@@ -1,6 +1,4 @@
-Tools.sh for Symfony
-====================
-
+# Tools.sh for Symfony
 > Commands tools for Symfony
 
 <br>
